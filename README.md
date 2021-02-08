@@ -23,4 +23,6 @@ pip install poetry
 | `make autolint` | Autolinting code. |
 | `make lint` | Autolint and code linting. |
 | `make test` | Run all the tests. |
+| `make doc` | Compile the internal documentation. |
+| `make serve-doc` | Start a local server to show the internal documentation. |
 | `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. |

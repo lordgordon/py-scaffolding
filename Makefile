@@ -2,7 +2,7 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-all: update autolint lint test
+all: update autolint lint test doc
 .PHONY: all
 
 update:
@@ -23,7 +23,7 @@ autolint:
 
 lint:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${POETRY_RUN} mypy .
+	@${POETRY_RUN} mypy src tests
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
@@ -37,11 +37,21 @@ test:
 	@${POETRY_RUN} coverage html
 	@${POETRY_RUN} coverage xml
 
+doc:
+	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
+	@cd docs; make html
+
+serve-doc: doc
+	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
+	@echo "Starting server..."
+	@cd "docs/_build/html"; ${POETRY_RUN} python -m http.server
+
 clean:
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
 	rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	cd docs; make clean
 	@echo "\n${BLUE}Removing poetry environment...${NC}\n"
 	poetry env list
 	poetry env info -p
