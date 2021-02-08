@@ -14,6 +14,24 @@ brew install python@3.9
 pip install poetry
 ```
 
+## Configure VS Code
+Run the following commands:
+```sh
+mkdir .vscode;touch .vscode/settings.json
+```
+
+Then put the following JSON in `.vscode/settings.json` and replace the 
+`python.pythonPath` value with the output of `poetry env info -p`.
+
+```json
+{
+    "python.pythonPath": "/path/to/poetry/env",
+    "python.poetryPath": "poetry",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}
+```
+
 ## Commands
 
 The main command that run everything (except a full clean):
