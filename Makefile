@@ -37,6 +37,11 @@ test:
 	@${POETRY_RUN} coverage html
 	@${POETRY_RUN} coverage xml
 
+serve-coverage:
+	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
+	@echo "Starting server..."
+	@cd "htmlcov"; ${POETRY_RUN} python -m http.server
+
 doc:
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
 	@cd docs; make html

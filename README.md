@@ -16,13 +16,23 @@ pip install poetry
 
 ## Commands
 
+The main command that run everything (except a full clean):
+```sh
+make
+```
+
+### Serving commands
 | command | description |
 | :-- | :-- |
-| `make` | Full execution (except clean). |
+| `make serve-coverage` | Start a local server to show the HTML code coverage report. |
+| `make serve-doc` | Start a local server to show the internal documentation. |
+
+### Helpful commands
+| command | description |
+| :-- | :-- |
 | `make update` | Just update the environment. |
 | `make autolint` | Autolinting code. |
 | `make lint` | Autolint and code linting. |
-| `make test` | Run all the tests. |
-| `make doc` | Compile the internal documentation. |
-| `make serve-doc` | Start a local server to show the internal documentation. |
+| `make test` | Run all the tests with code coverage. |
+| `make doc` | Compile and update the internal documentation. |
 | `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. |
