@@ -38,6 +38,21 @@ Then put the following JSON in `.vscode/settings.json` and replace the
 }
 ```
 
+## Release and Changelog
+
+Version bump and changelog update:
+```sh
+# PATCH
+poetry run cz bump --increment PATCH -ch --dry-run
+# MINOR
+poetry run cz bump --increment MINOR -ch --dry-run
+# MAJOR
+poetry run cz bump --increment MAJOR -ch --dry-run
+```
+
+If OK, run again without `--dry-run`. For full details see
+https://commitizen-tools.github.io/commitizen/bump/
+
 ## Commands
 
 The main command that run everything (except a full clean):

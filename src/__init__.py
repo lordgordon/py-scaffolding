@@ -1,8 +1,8 @@
 """Main project package."""
 
+from .__version__ import __version__, __full_version__
+
 __title__ = "py-scaffolding"
-__version__ = "0.0.1"
-__full_version__ = (0, 0, 1)
 __description__ = "Python project scaffolding"
 __author__ = "Nicholas Fiorentini"
 __license__ = "MIT License"
