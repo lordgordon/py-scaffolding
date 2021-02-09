@@ -4,23 +4,29 @@ https://github.com/lordgordon/py-scaffolding
 
 ## Requirements
 
-- Python 3.9 with [Poetry](https://python-poetry.org) installed globally.
-  - `pip3` must be available.
+- Python 3.9 (`pip3` must be available) with installed globally:
+  - [Poetry](https://python-poetry.org) installed globally.
+  - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
 
 On MacOS:
 ```sh
-brew install python@3.9
+brew install python@3.9 pre-commit
 pip install poetry
 ```
 
-## Configure VS Code
+## Setup
+```sh
+make
+```
+
+### Configure VS Code
 Run the following commands:
 ```sh
 mkdir .vscode;touch .vscode/settings.json
 ```
 
-Then put the following JSON in `.vscode/settings.json` and replace the 
+Then put the following JSON in `.vscode/settings.json` and replace the
 `python.pythonPath` value with the output of `poetry env info -p`.
 
 ```json

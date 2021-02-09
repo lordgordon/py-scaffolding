@@ -1,4 +1,4 @@
-POETRY_RUN := poetry run 
+POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
@@ -6,6 +6,7 @@ all: update autolint lint test doc
 .PHONY: all
 
 update:
+	pre-commit install
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
 	pip3 install --upgrade poetry
 	poetry check
@@ -15,6 +16,9 @@ update:
 	poetry update
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
 	@${POETRY_RUN} pip list -o --not-required --outdated
+	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
+	pre-commit install
+	pre-commit run --all-files
 
 autolint:
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
