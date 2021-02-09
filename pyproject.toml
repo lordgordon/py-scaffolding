@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "py-scaffolding"
+version = "0.0.1"
+description = "Empty project"
+authors = ["Nicholas Fiorentini <lordgordon@users.noreply.github.com>"]
+license = "MIT License"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+pylint = "^2.6.0"
+mypy = "^0.800"
+bandit = "^1.7.0"
+black = "^20.8b1"
+isort = "^5.7.0"
+pytest-bdd = "^4.0.2"
+coverage = {extras = ["toml"], version = "^5.4"}
+Sphinx = "^3.4.3"
+commitizen = "^2.14.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 90
+target-version = ["py38"]
+
+[tool.coverage.run]
+branch = true
+omit=[
+    "*/__main__.py",
+    "*/tests/*",
+    "*/docs/*",
+    "*/virtualenvs/*",
+    "*/venv/*"]
+
+[tool.coverage.report]
+exclude_lines =[
+    "pragma: no cover",
+    "if __name__ == .__main__.:"]
+show_missing = true
+skip_covered = false
+sort = "Cover"
+fail_under = 99
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 90
+atomic = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+python_files = "tests.py test_*.py *_tests.py"
+norecursedirs = ".* *.egg venv"
+junit_family = "xunit2"
+
+[tool.pylint.messages_control]
+disable = ''',
+    bad-continuation,
+    invalid-name,
+    too-many-arguments,
+    too-many-instance-attributes,
+    too-many-ancestors,
+    '''
+
+[tool.pylint.options]
+ignored-argument-names = "_.*|^ignored_|^unused_|args|kwargs"
+min-public-methods = "1"
+
+[tool.commitizen]
+version = "0.0.1"
+version_files = [
+    "src/__version__.py",
+    "pyproject.toml:version"
+]
