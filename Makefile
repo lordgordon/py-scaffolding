@@ -18,7 +18,7 @@ update:
 	@${POETRY_RUN} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	pre-commit install
-	ln -fs ./pre-commit.sh .git/hooks/pre-commit
+	cp -f pre-commit.sh .git/hooks/pre-commit
 
 autolint:
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
