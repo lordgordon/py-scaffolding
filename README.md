@@ -60,6 +60,8 @@ The main command that run everything (except a full clean):
 make
 ```
 
+`make help` to the rescue in case of doubts.
+
 ### Serving commands
 | command | description |
 | :-- | :-- |
@@ -72,6 +74,6 @@ make
 | `make update` | Just update the environment. |
 | `make autolint` | Autolinting code. |
 | `make lint` | Autolint and code linting. |
-| `make test` | Run all the tests with code coverage. |
+| `make test` | Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`. |
 | `make doc` | Compile and update the internal documentation. |
 | `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. |
