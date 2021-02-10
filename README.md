@@ -38,6 +38,9 @@ Then put the following JSON in `.vscode/settings.json` and replace the
 }
 ```
 
+Install the [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+extension to take advantage of `.editorconfig`.
+
 ## Release and Changelog
 
 Version bump and changelog update:
