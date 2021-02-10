@@ -2,10 +2,11 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-all: update autolint lint test doc
-.PHONY: all
+.PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
-update:
+all: update autolint lint test doc
+
+update: ## Just update the environment
 	pre-commit install
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
 	pip3 install --upgrade poetry
@@ -20,7 +21,7 @@ update:
 	pre-commit install
 	cp -f pre-commit.sh .git/hooks/pre-commit
 
-autolint:
+autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
 	@${POETRY_RUN} black .
 	@${POETRY_RUN} isort .
@@ -29,13 +30,13 @@ lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY_RUN} mypy src tests
 
-lint: lint-mypy
+lint: lint-mypy ## Autolint and code linting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${POETRY_RUN} pylint src tests
 
-test:
+test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
 	@${POETRY_RUN} coverage erase;
 	@${POETRY_RUN} coverage run -m pytest --junitxml=junit/test-results.xml
@@ -43,21 +44,21 @@ test:
 	@${POETRY_RUN} coverage html
 	@${POETRY_RUN} coverage xml
 
-serve-coverage:
+serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
 	@cd "htmlcov"; ${POETRY_RUN} python -m http.server
 
-doc:
+doc: ## Compile and update the internal documentation
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
 	@cd docs; make html
 
-serve-doc: doc
+serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
 	@cd "docs/_build/html"; ${POETRY_RUN} python -m http.server
 
-clean:
+clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
 	rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage
 	find . -type f -name "*.py[co]" -delete
@@ -68,3 +69,6 @@ clean:
 	poetry env info -p
 	poetry env remove $(shell poetry run which python)
 	poetry env list
+
+help: ## Show this help
+	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
