@@ -18,16 +18,18 @@ update:
 	@${POETRY_RUN} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	pre-commit install
-	pre-commit run --all-files
+	cp -f pre-commit.sh .git/hooks/pre-commit
 
 autolint:
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
 	@${POETRY_RUN} black .
 	@${POETRY_RUN} isort .
 
-lint:
+lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY_RUN} mypy src tests
+
+lint: lint-mypy
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"

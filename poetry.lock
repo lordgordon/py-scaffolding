@@ -397,7 +397,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.14"
+version = "3.0.15"
 description = "Library for building powerful interactive command lines in Python"
 category = "dev"
 optional = false
@@ -1032,8 +1032,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.14-py3-none-any.whl", hash = "sha256:c96b30925025a7635471dc083ffb6af0cc67482a00611bd81aeaeeeb7e5a5e12"},
-    {file = "prompt_toolkit-3.0.14.tar.gz", hash = "sha256:7e966747c18ececaec785699626b771c1ba8344c8d31759a1915d6b12fad6525"},
+    {file = "prompt_toolkit-3.0.15-py3-none-any.whl", hash = "sha256:4ccd91f540ef57732d38451889b915ab75a78e04f427e9f2811ff9da0332a174"},
+    {file = "prompt_toolkit-3.0.15.tar.gz", hash = "sha256:1411dc3c26dfbfb55b88d8239484b2f2a9df4e69e67965711b187c8917bff872"},
 ]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
