@@ -7,7 +7,6 @@ NC=\033[0m # No Color
 all: update autolint lint test doc
 
 update: ## Just update the environment
-	pre-commit install
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
 	pip3 install --upgrade poetry
 	poetry check
@@ -18,7 +17,6 @@ update: ## Just update the environment
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
 	@${POETRY_RUN} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
-	pre-commit install
 	cp -f pre-commit.sh .git/hooks/pre-commit
 
 autolint: ## Autolinting code
