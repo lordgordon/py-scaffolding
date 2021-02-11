@@ -28,7 +28,7 @@ lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY_RUN} mypy src tests
 
-lint: lint-mypy ## Autolint and code linting
+lint: autolint lint-mypy ## Autolint and code linting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
