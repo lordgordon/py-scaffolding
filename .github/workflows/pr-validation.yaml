@@ -1,0 +1,18 @@
+#
+# Workflow to validate a PR
+#
+name: pr-validation
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - uses: actions/checkout@v2
+      # prepare the build environment
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - run: pip install poetry
+      # main step
+      - run: make

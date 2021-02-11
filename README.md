@@ -2,21 +2,18 @@
 My custom Python project scaffolding repository.
 https://github.com/lordgordon/py-scaffolding
 
-## Requirements
+## Requirements and setup
 
 - Python 3.9 (`pip3` must be available) with installed globally:
   - [Poetry](https://python-poetry.org) installed globally.
   - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
 
-On MacOS:
+Then, to set everythin up on macOS:
 ```sh
 brew install python@3.9 pre-commit
 pip install poetry
-```
-
-## Setup
-```sh
+pre-commit install
 make
 ```
 
