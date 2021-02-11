@@ -9,7 +9,7 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
