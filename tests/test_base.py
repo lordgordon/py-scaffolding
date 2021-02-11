@@ -1,6 +1,8 @@
 """A very simple test suite to test the proper setup."""
 
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
+
 from src import __title__
 
 
