@@ -4,7 +4,7 @@ NC=\033[0m # No Color
 
 .PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
-all: update autolint lint test doc
+all: clean update autolint lint test doc
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
