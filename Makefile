@@ -2,9 +2,10 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-.PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
+.PHONY: all all-skip-clean update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
-all: update autolint lint test doc
+all: clean all-skip-clean
+all-skip-clean: update autolint lint test doc
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -28,7 +29,7 @@ lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY_RUN} mypy src tests
 
-lint: lint-mypy ## Autolint and code linting
+lint: autolint lint-mypy ## Autolint and code linting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
@@ -58,7 +59,7 @@ serve-doc: doc ## Start a local server to show the internal documentation
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
-	rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage
+	rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage .hypothesis
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	cd docs; make clean

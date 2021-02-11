@@ -19,6 +19,8 @@ pytest-bdd = "^4.0.2"
 coverage = {extras = ["toml"], version = "^5.4"}
 Sphinx = "^3.4.3"
 commitizen = "^2.14.2"
+Faker = "^6.1.1"
+hypothesis = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
