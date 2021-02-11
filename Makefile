@@ -2,9 +2,10 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-.PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
+.PHONY: all all-skip-clean update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
-all: clean update autolint lint test doc
+all: clean all-skip-clean
+all-skip-clean: update autolint lint test doc
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
