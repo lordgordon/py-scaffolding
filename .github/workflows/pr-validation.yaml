@@ -1,10 +1,15 @@
-#
 # Workflow to validate a PR
-#
 name: pr-validation
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
