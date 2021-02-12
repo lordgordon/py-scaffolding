@@ -2,6 +2,8 @@
 My custom Python project scaffolding repository.
 https://github.com/lordgordon/py-scaffolding
 
+![pr-validation](https://github.com/lordgordon/py-scaffolding/workflows/pr-validation/badge.svg?branch=main)
+
 ## Requirements and setup
 
 - Python 3.9 (`pip3` must be available) with installed globally:
