@@ -38,7 +38,7 @@ lint: autolint lint-mypy ## Autolint and code linting
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
 	@${POETRY_RUN} coverage erase;
-	@${POETRY_RUN} coverage run -m pytest --junitxml=junit/test-results.xml
+	@${POETRY_RUN} coverage run -m pytest --junitxml=junit/test-results.xml --hypothesis-show-statistics
 	@${POETRY_RUN} coverage report
 	@${POETRY_RUN} coverage html
 	@${POETRY_RUN} coverage xml
