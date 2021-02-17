@@ -5,7 +5,7 @@ NC=\033[0m # No Color
 .PHONY: all all-skip-clean update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
 all: clean all-skip-clean
-all-skip-clean: update lint test doc
+all-skip-clean: update lint test doc  ## everything but clean
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -73,4 +73,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	poetry env list
 
 help: ## Show this help
-	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
+		| sort \
+		| awk 'BEGIN {FS = ":.*?## "}; \
+		{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
