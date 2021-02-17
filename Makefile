@@ -34,6 +34,8 @@ lint: autolint lint-mypy ## Autolint and code linting
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${POETRY_RUN} pylint src tests
+	@echo "\n${BLUE}Running doc8...${NC}\n"
+	@${POETRY_RUN} doc8 docs
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
