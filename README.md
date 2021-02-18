@@ -78,4 +78,4 @@ make
 | `make lint` | Autolint and code linting. |
 | `make test` | Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`. |
 | `make doc` | Compile and update the internal documentation. |
-| `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. |
+| `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. This command allow to start over from a fresh state. |
