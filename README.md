@@ -25,15 +25,14 @@ Run the following commands:
 mkdir .vscode;touch .vscode/settings.json
 ```
 
-Then put the following JSON in `.vscode/settings.json` and replace the
-`python.pythonPath` value with the output of `poetry env info -p`.
-
+Then put the following JSON in `.vscode/settings.json` and replace the `python.pythonPath` value with the output of
+`poetry env info -p`, adding `/bin/python` at the end:
 ```json
 {
-    "python.pythonPath": "/path/to/poetry/env",
-    "python.poetryPath": "poetry",
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+  "python.pythonPath": "/path/to/poetry/env/bin/python",
+  "python.poetryPath": "poetry",
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true
 }
 ```
 
@@ -62,6 +61,11 @@ The main command that run everything (including a full clean):
 make
 ```
 
+Then, to execute the main entry point:
+```sh
+make run
+```
+
 `make help` to the rescue in case of doubts.
 
 ### Serving commands
@@ -79,3 +83,4 @@ make
 | `make test` | Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`. |
 | `make doc` | Compile and update the internal documentation. |
 | `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. This command allow to start over from a fresh state. |
+| `make run` | Executes the main entry point. |

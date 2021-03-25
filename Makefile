@@ -26,13 +26,13 @@ autolint: ## Autolinting code
 
 lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${POETRY_RUN} mypy src tests
+	@${POETRY_RUN} mypy py_scaffolding tests
 
 lint: autolint lint-mypy ## Autolint and code linting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 	@${POETRY_RUN} bandit -c bandit.yaml -r .
 	@echo "\n${BLUE}Running pylint...${NC}\n"
-	@${POETRY_RUN} pylint src tests
+	@${POETRY_RUN} pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
 	@${POETRY_RUN} doc8 docs
 
@@ -72,6 +72,9 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	poetry env info -p
 	poetry env remove $(shell poetry run which python)
 	poetry env list
+
+run: ## Execute the main entry point
+	@${POETRY_RUN} python main.py
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
