@@ -4,7 +4,7 @@ from faker import Faker
 from hypothesis import given
 from hypothesis import strategies as st
 
-from src import __title__
+from py_scaffolding import __title__
 
 
 def test_working():
