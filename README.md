@@ -11,7 +11,7 @@ https://github.com/lordgordon/py-scaffolding
   - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
 
-Then, to set everythin up on macOS:
+Then, to set everything up on macOS:
 ```sh
 brew install python@3.9 pre-commit
 pip install poetry
