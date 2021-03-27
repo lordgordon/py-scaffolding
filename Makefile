@@ -2,7 +2,7 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-.PHONY: all all-skip-clean update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
+.PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
 
 all: update lint test doc
 
