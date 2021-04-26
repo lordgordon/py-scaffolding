@@ -56,7 +56,7 @@ https://commitizen-tools.github.io/commitizen/bump/
 
 ## Commands
 
-The main command that run everything (including a full clean):
+The main command that run everything (full clean excluded):
 ```sh
 make
 ```
