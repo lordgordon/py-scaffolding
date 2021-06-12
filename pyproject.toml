@@ -11,17 +11,18 @@ python = "^3.9"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
 pylint = "^2.7.2"
-mypy = "^0.812"
+mypy = "^0.902"
 bandit = "1.7.0"
 black = "^20.8b1"
 isort = "^5.7.0"
 pytest-bdd = "^4.0.2"
 coverage = {extras = ["toml"], version = "^5.5"}
-Sphinx = "^3.5.3"
+Sphinx = "^4.0.2"
 commitizen = "^2.16.0"
-Faker = "^6.6.2"
+Faker = "^8.7.0"
 hypothesis = "^6.8.1"
 doc8 = "^0.8.1"
+pyupgrade = "^2.19.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
