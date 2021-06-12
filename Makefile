@@ -23,6 +23,7 @@ autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
 	@${POETRY_RUN} black .
 	@${POETRY_RUN} isort .
+	@${POETRY_RUN} pyupgrade --py39-plus **/*.py
 
 lint-mypy:
 	@echo "\n${BLUE}Running mypy...${NC}\n"
