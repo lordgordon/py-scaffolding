@@ -1,0 +1,16 @@
+# Workflow to tag a new release
+name: release
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout main
+          TAG="py-39.$(date '+%Y%m%d')"
+          git tag -a "${TAG}" -m "release ${TAG}"
+          git push origin "${TAG}"
