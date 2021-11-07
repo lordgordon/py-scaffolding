@@ -20,6 +20,6 @@ def test_ints_are_commutative(x, y):
 
 def test_faker():
     """Just an example on using Faker."""
-    fake = Faker()  # type: ignore[no-untyped-call]
-    Faker.seed(42)  # type: ignore[no-untyped-call]
+    fake = Faker()
+    Faker.seed(42)
     assert "@" in fake.ascii_company_email()
