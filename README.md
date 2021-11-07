@@ -6,15 +6,15 @@ https://github.com/lordgordon/py-scaffolding
 
 ## Requirements and setup
 
-- Python 3.9 (`pip3` must be available) with installed globally:
+- Python 3.10 (`pip3` must be available) with installed globally:
   - [Poetry](https://python-poetry.org) installed globally.
   - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
 
 Then, to set everything up on macOS:
 ```sh
-brew install python@3.9 pre-commit
-pip install poetry
+brew install python@3.10 pre-commit
+pip3 install poetry
 pre-commit install
 make
 ```
