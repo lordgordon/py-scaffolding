@@ -7,21 +7,22 @@ license = "MIT License"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+pydantic = "~1.8"
 
 [tool.poetry.dev-dependencies]
-pytest = "~6.2"
-pylint = "~2.11"
+pytest = "~6"
+pylint = "~2"
 mypy = "~0.910"
 bandit = "~1.7"
 black = "~20.8b1"
-isort = "~5.8"
-pytest-bdd = "~5.0"
-coverage = {extras = ["toml"], version = "~6.1"}
-Sphinx = "~4.2"
-commitizen = "~2.20"
-Faker = "~9.8"
-hypothesis = "~6.24"
-doc8 = "~0.9"
+isort = "~5"
+pytest-bdd = "~5"
+coverage = {extras = ["toml"], version = "~6"}
+Sphinx = "~4"
+commitizen = "~2"
+Faker = "~9"
+hypothesis = "~6"
+doc8 = "~0.10"
 pyupgrade = "~2.29"
 
 [build-system]
