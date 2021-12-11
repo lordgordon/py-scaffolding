@@ -24,6 +24,7 @@ update: ## Just update the environment
 	@${POETRY_RUN} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	cp -f pre-commit.sh .git/hooks/pre-commit
+	@${POETRY_RUN} pip-audit --desc
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
