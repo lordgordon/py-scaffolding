@@ -24,6 +24,7 @@ Faker = "~10"
 hypothesis = "~6"
 doc8 = "~0.10"
 pyupgrade = "~2.29"
+pip-audit = "~1.1"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
