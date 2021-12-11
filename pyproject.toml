@@ -20,13 +20,13 @@ pytest-bdd = "~5"
 coverage = {extras = ["toml"], version = "~6"}
 Sphinx = "~4"
 commitizen = "~2"
-Faker = "~9"
+Faker = "~10"
 hypothesis = "~6"
 doc8 = "~0.10"
 pyupgrade = "~2.29"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

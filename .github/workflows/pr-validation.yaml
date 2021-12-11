@@ -20,4 +20,6 @@ jobs:
           python-version: "3.10"
       - run: pip install poetry
       # main step
-      - run: make
+      - run: make cicd
+      # build Docker image for Production
+      - run: make build
