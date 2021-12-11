@@ -79,6 +79,7 @@ make run
 | :-- | :-- |
 | `make update` | Just update the environment. |
 | `make autolint` | Autolinting code. |
+| `make lint-base` | Code linting without running autolinters. |
 | `make lint` | Autolint and code linting. |
 | `make test` | Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`. |
 | `make doc` | Compile and update the internal documentation. |

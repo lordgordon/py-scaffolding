@@ -2,7 +2,7 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-.PHONY: all update autolint lint-mypy lint test doc serve-doc serve-coverage clean help
+.PHONY: all update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help
 
 all: update lint test doc
 
@@ -25,17 +25,19 @@ autolint: ## Autolinting code
 	@${POETRY_RUN} isort .
 	@${POETRY_RUN} pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
 
-lint-mypy:
+lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY_RUN} mypy py_scaffolding tests
 
-lint: autolint lint-mypy ## Autolint and code linting
+lint-base: lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${POETRY_RUN} bandit -c bandit.yaml -r .
+	@${POETRY_RUN} bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${POETRY_RUN} pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
 	@${POETRY_RUN} doc8 docs
+
+lint: autolint lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
