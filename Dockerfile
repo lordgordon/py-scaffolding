@@ -5,25 +5,27 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
   POETRY_NO_INTERACTION=1 \
-  POETRY_VERSION=1.1.6 \
+  POETRY_VERSION=1.1.11 \
   POETRY_VIRTUALENVS_IN_PROJECT=true \
-  PYSETUP_PATH="/opt/pysetup" \
+  PYSETUP_PATH="/app" \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
-  PYTHONUNBUFFERED=1 \
-  VENV_PATH="/opt/pysetup/.venv"
+  PYTHONUNBUFFERED=1
+ENV VENV_PATH="$PYSETUP_PATH/.venv"
 ENV PATH="$VENV_PATH/bin:$PATH"
+
+RUN mkdir $PYSETUP_PATH
 WORKDIR $PYSETUP_PATH
 
 # stage: builder (creates the .venv from poetry)
 FROM base AS builder
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml poetry.lock .
 RUN poetry install --no-dev
 
-COPY py_scaffolding/ .
-COPY main.py main.py
+COPY py_scaffolding/ py_scaffolding/
+COPY main.py .
 RUN poetry build
 
 # stage: production image
@@ -40,8 +42,8 @@ RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf 
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 RUN poetry install
 
-COPY docs/ .
-COPY tests/ .
+COPY docs/ docs/
+COPY tests/ tests/
 COPY mypy.ini .
 COPY Makefile .
 
@@ -51,7 +53,7 @@ CMD []
 # # stage: migrations
 # FROM base as migrations
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-# COPY migrations/ .
+# COPY migrations/ migrations/
 # COPY alembic.ini .
 #
 # RUN apt-get update \

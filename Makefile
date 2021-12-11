@@ -2,9 +2,15 @@ POETRY_RUN := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
-.PHONY: all update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help
+DOCKER_BASE_IMAGE=python:3.10-slim-buster
+DOCKER_IMAGE_NAME=py-scaffolding
+DOCKER_DEVELOPMENT_TAG=local-dev
+DOCKER_PRODUCTION_TAG=latest
 
-all: update lint test doc
+.PHONY: all cicd update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build run-locally run-shell build-for-tests
+
+all: update lint test doc build-for-tests
+cicd: update lint test doc
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -75,9 +81,22 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	poetry env info -p
 	poetry env remove $(shell poetry run which python)
 	poetry env list
+	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_DEVELOPMENT_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_PRODUCTION_TAG} --force
+	-docker image rm ${DOCKER_BASE_IMAGE}
 
-run: ## Execute the main entry point
+run-locally: ## Execute the main entry point locally (with Poetry)
 	@${POETRY_RUN} python main.py
+
+run-shell: ## Open a shell in the Docker image
+	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_DEVELOPMENT_TAG} /bin/bash
+
+build-for-tests: ## Build Docker image with testing tools
+	docker pull ${DOCKER_BASE_IMAGE}
+	docker build -f Dockerfile --target testing -t ${DOCKER_IMAGE_NAME}:${DOCKER_DEVELOPMENT_TAG} .
+
+build: ## Build Docker image for production
+	docker build -f Dockerfile --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_PRODUCTION_TAG} .
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \

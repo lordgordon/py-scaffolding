@@ -10,6 +10,7 @@ https://github.com/lordgordon/py-scaffolding
   - [Poetry](https://python-poetry.org) installed globally.
   - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
+- [Docker](https://www.docker.com/).
 
 Then, to set everything up on macOS:
 ```sh
@@ -61,12 +62,29 @@ The main command that run everything (full clean excluded):
 make
 ```
 
-Then, to execute the main entry point:
+Then, to execute the main entry point with the local Poetry environment:
 ```sh
-make run
+make run-locally
+```
+
+or open a shell in the Docker image:
+```shell
+make run-shell
 ```
 
 `make help` to the rescue in case of doubts.
+
+### Run the production image
+
+To run the main entry point with the production image, first build the production image:
+```sh
+make build
+```
+
+Then:
+```sh
+docker run --rm -it py-scaffolding:latest
+```
 
 ### Serving commands
 | command | description |
@@ -84,4 +102,6 @@ make run
 | `make test` | Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`. |
 | `make doc` | Compile and update the internal documentation. |
 | `make clean` | Force a clean environment: remove all temporary files and caches. Start from a new environment. This command allow to start over from a fresh state. |
-| `make run` | Executes the main entry point. |
+| `make build` | Build the Docker image. |
+| `make run-locally` | Execute the main entry point locally (with Poetry). |
+| `make run-shell` | Open a shell in the Docker image. |
