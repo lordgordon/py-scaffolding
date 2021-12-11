@@ -21,7 +21,7 @@ WORKDIR $PYSETUP_PATH
 FROM base AS builder
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 
-COPY pyproject.toml poetry.lock .
+COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-dev
 
 COPY py_scaffolding/ py_scaffolding/
