@@ -9,7 +9,7 @@ DOCKER_PRODUCTION_TAG=latest
 
 .PHONY: all cicd update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build run-locally run-shell build-for-tests
 
-all: update lint test doc build-for-tests
+all: update lint test doc build-for-tests build
 cicd: update lint test doc
 
 update: ## Just update the environment
