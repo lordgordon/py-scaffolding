@@ -66,10 +66,10 @@ serve-doc: doc ## Start a local server to show the internal documentation
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
-	rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage .hypothesis
+	-rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage .hypothesis
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
-	cd docs; make clean
+	-cd docs; make clean
 	@echo "\n${BLUE}Removing poetry environment...${NC}\n"
 	poetry env list
 	poetry env info -p
