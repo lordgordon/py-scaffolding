@@ -10,6 +10,7 @@ Welcome to py-scaffolding's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   py-scaffolding
 
 
 Indices and tables
