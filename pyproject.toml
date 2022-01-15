@@ -79,6 +79,8 @@ disable = ''',
 [tool.pylint.options]
 ignored-argument-names = "_.*|^ignored_|^unused_|args|kwargs"
 min-public-methods = "1"
+min-similarity-lines = "6"
+max-line-length = "120"
 
 [tool.commitizen]
 version = "0.0.1"
