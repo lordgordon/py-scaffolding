@@ -11,14 +11,14 @@ import structlog
 
 def set_up_logger(
     *, logger_name: str, log_level: int = logging.INFO
-) -> structlog.stdlib.BoundLogger:
+) -> structlog.stdlib.BoundLogger:  # pragma: no cover
     """
-    Setup the logger object to use in your code.
+    Set up the logger object to use in your code.
 
     ..  code-block:: python
         :caption: Minimal example
 
-        from applications_processing.helpers.logging import set_up_logger
+        from py_scaffolding.logging import set_up_logger
         LOG = set_up_logger(logger_name=__name__)
 
         # ... later in the code ...
@@ -32,18 +32,41 @@ def set_up_logger(
     _set_up_structlog()
     logger = structlog.get_logger(logger_name)
     logger.setLevel(log_level)
-    if not logger.new()._logger.handlers:  # pragma: no cover
+    if not logger.new()._logger.handlers:
         logger.addHandler(_configure_logger_handlers())
     return logger
 
 
-def _configure_logger_handlers() -> logging.StreamHandler:
+def set_logger_level(
+    *, logger: structlog.stdlib.BoundLogger, level: str
+):  # pragma: no cover
+    """
+    Allow to set a new logging level by name for an existing logger.
+
+    ..  code-block:: python
+        :caption: Minimal example
+
+        from py_scaffolding.logging import set_logger_level
+
+        # ... in the entry point ...
+        set_logger_level(logger=LOG, level="DEBUG")
+    """
+    # NOTE: level is not further refined with a Literal of allowed strings due to the dynamic nature of logging levels.
+    clean_level = level.upper()
+    numeric_level = getattr(logging, clean_level)
+    logger.setLevel(numeric_level)
+    logger.info(
+        "Log level changed", new_level=clean_level, new_level_numeric=numeric_level
+    )
+
+
+def _configure_logger_handlers() -> logging.StreamHandler:  # pragma: no cover
     """Internal helper to add handlers."""
     logger_handler = logging.StreamHandler(sys.stdout)
     return logger_handler
 
 
-def _set_up_structlog() -> None:
+def _set_up_structlog() -> None:  # pragma: no cover
     """
     Internal helper to configure structlog.
 
