@@ -26,6 +26,7 @@ hypothesis = "~6"
 doc8 = "~0.11"
 pyupgrade = "~2.34"
 pip-audit = "~2.3"
+ipdb = "~0.13"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
