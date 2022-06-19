@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import logging
 from io import StringIO
-from typing import Any
+from typing import Any, Iterator
 
 import pytest
 
@@ -16,10 +16,10 @@ class JSONLogIO(StringIO):
 
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._entries: list[dict | None] = []
+        self._entries: list[dict] = []
 
     @property
-    def entries(self) -> list[dict | None]:
+    def entries(self) -> list[dict]:
         # build _entries only once
         if not self._entries:
             self._entries = [json.loads(line) for line in self.getvalue().splitlines()]
@@ -28,7 +28,7 @@ class JSONLogIO(StringIO):
 
 
 @pytest.fixture()
-def log_capture():
+def log_capture() -> Iterator[JSONLogIO]:
     """To capture our custom logger based on structlog."""
     logger = logging.getLogger()
 

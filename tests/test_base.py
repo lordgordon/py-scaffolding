@@ -7,26 +7,28 @@ from hypothesis import strategies as st
 from py_scaffolding import __title__
 from py_scaffolding.example import demo_with_logger
 
+from .conftest import JSONLogIO
 
-def test_working():
+
+def test_working() -> None:
     """Just to test everything is running as expected."""
     assert __title__ == "py-scaffolding"
 
 
 @given(st.integers(), st.integers())
-def test_ints_are_commutative(x, y):
+def test_ints_are_commutative(x: int, y: int) -> None:
     """Test hypotesis is running."""
     assert x + y == y + x
 
 
-def test_faker():
+def test_faker() -> None:
     """Just an example on using Faker."""
     fake = Faker()
     Faker.seed(42)
     assert "@" in fake.ascii_company_email()
 
 
-def test_structlog_capture(log_capture):
+def test_structlog_capture(log_capture: JSONLogIO) -> None:
     """Ensures our custom logger capture works and the captured log has the minimal expected keys."""
     demo_with_logger()
 
@@ -38,7 +40,7 @@ def test_structlog_capture(log_capture):
     assert "timestamp" in logged_entry
 
 
-def test_demo_with_logger(log_capture):
+def test_demo_with_logger(log_capture: JSONLogIO) -> None:
     """An example on how to test the logger."""
     assert log_capture.entries == []
 
