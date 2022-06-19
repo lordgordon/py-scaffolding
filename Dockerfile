@@ -5,7 +5,7 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
   POETRY_NO_INTERACTION=1 \
-  POETRY_VERSION=1.1.12 \
+  POETRY_VERSION=1.1.13 \
   POETRY_VIRTUALENVS_IN_PROJECT=true \
   PYSETUP_PATH="/app" \
   PYTHONFAULTHANDLER=1 \
@@ -31,7 +31,7 @@ RUN poetry build
 # stage: production image
 FROM base AS production
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "-OO", "main.py"]
 CMD []
 
 # stage: testing
@@ -44,7 +44,6 @@ RUN poetry install
 
 COPY docs/ docs/
 COPY tests/ tests/
-COPY mypy.ini .
 COPY Makefile .
 
 ENTRYPOINT [""]
@@ -53,13 +52,14 @@ CMD []
 # # stage: migrations
 # FROM base as migrations
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-# COPY migrations/ migrations/
-# COPY alembic.ini .
 #
 # RUN apt-get update \
 #   && apt-get install -y --no-install-recommends postgresql-client \
 #   && apt-get clean \
 #   && rm -rf /var/lib/apt/lists/*
+#
+# COPY migrations/ migrations/
+# COPY alembic.ini .
 #
 # ENTRYPOINT ["./migrations/run_migrations.sh"]
 # CMD []

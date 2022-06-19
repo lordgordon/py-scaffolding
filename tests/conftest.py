@@ -12,7 +12,7 @@ import pytest
 
 
 class JSONLogIO(StringIO):
-    """ Helper to capture logs and convert the raw JSON string into a proper dict. """
+    """Helper to capture logs and convert the raw JSON string into a proper dict."""
 
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)

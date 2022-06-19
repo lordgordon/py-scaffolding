@@ -60,7 +60,7 @@ test: ## Run all the tests with code coverage. You can also `make test tests/tes
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "htmlcov"; ${POETRY_RUN} python -m http.server
+	@cd "htmlcov"; ${POETRY_RUN} python -OO -m http.server
 
 doc: ## Compile and update the internal documentation
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
@@ -69,7 +69,7 @@ doc: ## Compile and update the internal documentation
 serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "docs/_build/html"; ${POETRY_RUN} python -m http.server
+	@cd "docs/_build/html"; ${POETRY_RUN} python -OO -m http.server
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
@@ -87,7 +87,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	-docker image rm ${DOCKER_BASE_IMAGE}
 
 run-locally: ## Execute the main entry point locally (with Poetry)
-	@${POETRY_RUN} python main.py
+	@${POETRY_RUN} python -OO main.py
 
 run-shell: ## Open a shell in the Docker image
 	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_DEVELOPMENT_TAG} /bin/bash

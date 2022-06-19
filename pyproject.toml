@@ -13,19 +13,19 @@ structlog = "~21.5"
 [tool.poetry.dev-dependencies]
 pytest = "~6"
 pylint = "~2"
-mypy = "~0.931"
+mypy = "~0.961"
 bandit = "~1.7"
-black = "~20.8b1"
+black = "~22.3"
 isort = "~5"
 pytest-bdd = "~5"
 coverage = {extras = ["toml"], version = "~6"}
-Sphinx = "~4"
+Sphinx = "~5"
 commitizen = "~2"
-Faker = "~11"
+Faker = "~13"
 hypothesis = "~6"
-doc8 = "~0.10"
-pyupgrade = "~2.31"
-pip-audit = "~1.1"
+doc8 = "~0.11"
+pyupgrade = "~2.34"
+pip-audit = "~2.3"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
@@ -69,7 +69,6 @@ junit_family = "xunit2"
 
 [tool.pylint.messages_control]
 disable = ''',
-    bad-continuation,
     invalid-name,
     too-many-arguments,
     too-many-instance-attributes,
@@ -88,3 +87,30 @@ version_files = [
     "py_scaffolding/__version__.py",
     "pyproject.toml:version"
 ]
+
+[tool.mypy]
+python_version = "3.10"
+plugins = ["pydantic.mypy"]
+
+check_untyped_defs = true
+disallow_any_generics = false
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+strict_optional = true
+strict_equality = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = true
+show_error_codes = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
