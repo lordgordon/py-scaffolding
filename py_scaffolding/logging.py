@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from typing import cast
 
 import structlog
 
@@ -30,7 +31,7 @@ def set_up_logger(
     """
     # pylint: disable=protected-access
     _set_up_structlog()
-    logger = structlog.get_logger(logger_name)
+    logger = cast(structlog.stdlib.BoundLogger, structlog.get_logger(logger_name))
     logger.setLevel(log_level)
     if not logger.new()._logger.handlers:
         logger.addHandler(_configure_logger_handlers())
@@ -39,7 +40,7 @@ def set_up_logger(
 
 def set_logger_level(
     *, logger: structlog.stdlib.BoundLogger, level: str
-):  # pragma: no cover
+) -> None:  # pragma: no cover
     """
     Allow to set a new logging level by name for an existing logger.
 
