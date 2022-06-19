@@ -31,7 +31,7 @@ RUN poetry build
 # stage: production image
 FROM base AS production
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "-OO", "main.py"]
 CMD []
 
 # stage: testing
