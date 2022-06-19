@@ -1,7 +1,6 @@
 """Main entry point."""
 
-from py_scaffolding.example import demo, demo_with_logger
+from py_scaffolding.example import example
 
 if __name__ == "__main__":
-    demo_with_logger()
-    print(demo())
+    example()

@@ -1,5 +1,5 @@
 # stage: baseline
-FROM python:3.10-slim-buster AS base
+FROM python:3.10-slim-bullseye AS base
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
