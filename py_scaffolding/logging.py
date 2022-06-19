@@ -38,7 +38,7 @@ def set_up_logger(
 
 
 def _configure_logger_handlers() -> logging.StreamHandler:
-    """ Internal helper to add handlers. """
+    """Internal helper to add handlers."""
     logger_handler = logging.StreamHandler(sys.stdout)
     return logger_handler
 
