@@ -52,13 +52,14 @@ CMD []
 # # stage: migrations
 # FROM base as migrations
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-# COPY migrations/ migrations/
-# COPY alembic.ini .
 #
 # RUN apt-get update \
 #   && apt-get install -y --no-install-recommends postgresql-client \
 #   && apt-get clean \
 #   && rm -rf /var/lib/apt/lists/*
+#
+# COPY migrations/ migrations/
+# COPY alembic.ini .
 #
 # ENTRYPOINT ["./migrations/run_migrations.sh"]
 # CMD []
