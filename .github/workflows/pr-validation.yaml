@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@v2
       # build images
       - run: ls -lsa
-      - name: Build test image
-        run: make build-for-tests
       - name: Build production image
         run: make build
+      - name: Build test image
+        run: make build-for-tests
       - run: docker image ls
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
