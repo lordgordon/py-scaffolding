@@ -25,9 +25,18 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       # build images
       - name: Build test image
-        run: make build-for-tests
-      - name: Build production image
-        run: make build
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
+          target: testing
+          build-args: |
+            DOCKER_BASE_IMAGE=${IMAGE_NAME}
+            PYSETUP_PATH=/app
+          push: false
+#      - name: Build test image
+#        run: make build-for-tests
+#      - name: Build production image
+#        run: make build
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
