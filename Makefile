@@ -84,9 +84,10 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	poetry env info -p
 	poetry env remove $(shell poetry run which python)
 	poetry env list
-	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_BASE_IMAGE}
 
 run-locally: ## Execute the main entry point locally (with Poetry)
@@ -101,6 +102,7 @@ build-for-tests: ## Build Docker image with testing tools
 
 build: ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
+	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
 
 vulnscan: ## Execute Trivy scanner dockerized against this repo
 	## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here

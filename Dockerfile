@@ -69,15 +69,15 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER docs/ docs/
 COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/
 COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 
-# # stage: migrations
-# FROM base as migrations
-# COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-#
-# USER root
-# RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
-# USER $LOCAL_USER
-#
+# stage: migrations
+FROM base as migrations
+COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+USER $LOCAL_USER
+
 # COPY --chown=$LOCAL_USER:$LOCAL_USER migrations/ migrations/
 # COPY --chown=$LOCAL_USER:$LOCAL_USER alembic.ini .
-#
+
 # ENTRYPOINT ["./migrations/run_migrations.sh"]
