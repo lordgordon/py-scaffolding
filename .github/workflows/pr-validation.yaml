@@ -139,16 +139,24 @@ jobs:
           docker load < ${GITHUB_ARTIFACTS_PATH}/production.tar.gz
           docker image ls
       # vulnerabilities checks with Trivy
+      - name: Prepare empty files
+        run: |
+          touch trivy-config-results.sarif trivy-fs-results.sarif trivy-image-results.sarif
       - name: Check config
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
           format: "sarif"
           severity: "HIGH,CRITICAL"
-          hide-progress: true
           ignore-unfixed: true
           exit-code: "1"
           output: "trivy-config-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-config-results.sarif"
+          category: trivy-fs
       - name: Check repository
         uses: aquasecurity/trivy-action@master
         with:
@@ -159,6 +167,12 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
           output: "trivy-fs-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-fs-results.sarif"
+          category: trivy-config
       - name: Check production image
         uses: aquasecurity/trivy-action@master
         with:
@@ -171,18 +185,6 @@ jobs:
           vuln-type: "os,library"
           security-checks: "vuln,config,secret"
           output: "trivy-image-results.sarif"
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: "trivy-config-results.sarif"
-          category: trivy-fs
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: "trivy-fs-results.sarif"
-          category: trivy-config
       - name: Upload Trivy results
         uses: github/codeql-action/upload-sarif@v2
         if: always()
