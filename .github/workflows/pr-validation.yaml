@@ -11,6 +11,8 @@ on:
   workflow_dispatch:
 
 env:
+  # keep this aligned with Makefile
+  DOCKER_BASE_IMAGE: python:3.10.5-slim-buster
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
 
@@ -21,16 +23,15 @@ jobs:
       # checkout the repo
       - uses: actions/checkout@v2
       - run: ls -lsa
-      # prepare Docker environment
-      - uses: docker/setup-buildx-action@v2
       # build images
+      - uses: docker/setup-buildx-action@v2
       - name: Build test image
         uses: docker/build-push-action@v3
         with:
-          tags: ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
+          tags: ${{IMAGE_NAME}}-testing:${{IMAGE_LOCAL_TAG}}
           target: testing
           build-args: |
-            DOCKER_BASE_IMAGE=${IMAGE_NAME}
+            DOCKER_BASE_IMAGE=${{DOCKER_BASE_IMAGE}}
             PYSETUP_PATH=/app
           push: false
 #      - name: Build test image
@@ -99,7 +100,7 @@ jobs:
       - name: Run Trivy against production image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "${IMAGE_NAME}:${IMAGE_LOCAL_TAG}"
+          image-ref: ${{IMAGE_NAME}}:${{IMAGE_LOCAL_TAG}}
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
