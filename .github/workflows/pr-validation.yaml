@@ -16,22 +16,24 @@ env:
 
 jobs:
   build-images:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
-      # build images
       - run: ls -lsa
-      - name: Build production image
-        run: make build
+      # prepare Docker environment
+      uses: docker/setup-buildx-action@v1
+      # build images
       - name: Build test image
         run: make build-for-tests
-      - run: docker image ls
+      - name: Build production image
+        run: make build
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
           mkdir -p /workspace/artifacts
           cd /workspace/artifacts
+          docker image ls
           docker save ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} | gzip > test.tar.gz
           docker save ${IMAGE_NAME}:${IMAGE_LOCAL_TAG} | gzip > production.tar.gz
       - name: Upload artifacts
@@ -43,7 +45,7 @@ jobs:
 
   run-tests:
     needs: build-images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
@@ -57,7 +59,7 @@ jobs:
         run: |
           cd /workspace/artifacts
           docker load < test.tar.gz
-      - run: docker image ls
+          docker image ls
       # run tests
       - name: Linters
         run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make lint
@@ -69,7 +71,7 @@ jobs:
 
   check-vulnerabilities:
     needs: build-images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
@@ -83,7 +85,7 @@ jobs:
         run: |
           cd /workspace/artifacts
           docker load < production.tar.gz
-      - run: docker image ls
+          docker image ls
       # vulnerabilities checks with Trivy
       - name: Run Trivy against production image
         uses: aquasecurity/trivy-action@master
