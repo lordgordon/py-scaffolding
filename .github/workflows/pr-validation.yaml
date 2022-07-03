@@ -21,8 +21,11 @@ jobs:
       # checkout the repo
       - uses: actions/checkout@v2
       # build images
-      - run: make build-for-tests
-      - run: make build
+      - run: ls -lsa
+      - name: Build test image
+        run: make build-for-tests
+      - name: Build production image
+        run: make build
       - run: docker image ls
       # build image artifact to share in the next jobs
       - name: Prepare artifacts

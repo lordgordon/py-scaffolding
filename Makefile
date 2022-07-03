@@ -9,10 +9,9 @@ DOCKER_LOCAL_TAG=current-local
 RUN_DOCKER_BUILD := docker build --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
 RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
-.PHONY: all cicd update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build vulnscan run-locally run-shell build-for-tests
+.PHONY: all update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build vulnscan run-locally run-shell build-for-tests
 
 all: update lint test doc build-for-tests build vulnscan
-cicd: update lint test doc
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
