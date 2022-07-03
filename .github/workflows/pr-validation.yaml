@@ -21,6 +21,8 @@ jobs:
   build-images:
     name: Build images
     runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    # Don't run the pipeline when the commit message includes skip-ci
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
