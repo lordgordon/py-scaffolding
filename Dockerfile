@@ -1,13 +1,14 @@
 # stage: baseline
-FROM python:3.10.5-slim-bullseye AS base
+ARG DOCKER_BASE_IMAGE
+FROM $DOCKER_BASE_IMAGE AS base
 
+ARG PYSETUP_PATH
 ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
   POETRY_NO_INTERACTION=1 \
   POETRY_VERSION=1.1.13 \
   POETRY_VIRTUALENVS_IN_PROJECT=true \
-  PYSETUP_PATH="/app" \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
   PYTHONUNBUFFERED=1 \
@@ -58,7 +59,7 @@ FROM base AS testing
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 
 USER root
-RUN apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 RUN poetry install && \
     chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
@@ -73,7 +74,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 #
 # USER root
-# RUN apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
 # USER $LOCAL_USER
 #
 # COPY --chown=$LOCAL_USER:$LOCAL_USER migrations/ migrations/
