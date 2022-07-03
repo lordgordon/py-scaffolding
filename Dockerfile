@@ -10,26 +10,34 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
   PYSETUP_PATH="/app" \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
-  PYTHONUNBUFFERED=1
+  PYTHONUNBUFFERED=1 \
+  LOCAL_USER=alice
 ENV VENV_PATH="$PYSETUP_PATH/.venv"
 ENV PATH="$VENV_PATH/bin:$PATH"
 
-RUN mkdir $PYSETUP_PATH
+RUN mkdir $PYSETUP_PATH && \
+    groupadd --system $LOCAL_USER && \
+    useradd --no-log-init --create-home --system --shell /bin/bash -g $LOCAL_USER $LOCAL_USER && \
+    chown $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
 WORKDIR $PYSETUP_PATH
-
-# stage: builder (creates the .venv from poetry)
-FROM base AS builder
-RUN pip install -U pip "poetry==$POETRY_VERSION"
-
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-dev
-
-COPY py_scaffolding/ py_scaffolding/
-COPY main.py .
-RUN poetry build
+USER $LOCAL_USER
 
 ENTRYPOINT []
 CMD []
+
+# stage: builder (creates the .venv from poetry)
+FROM base AS builder
+USER root
+RUN pip install -U pip "poetry==$POETRY_VERSION"
+USER $LOCAL_USER
+
+COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml poetry.lock ./
+RUN poetry install --no-dev
+
+COPY --chown=$LOCAL_USER:$LOCAL_USER py_scaffolding/ py_scaffolding/
+COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
+COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
+RUN poetry build
 
 # stage: production image
 FROM base AS production
@@ -45,26 +53,29 @@ ENTRYPOINT ["trivy"]
 FROM base AS testing
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 
+USER root
 RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
 RUN pip install -U pip "poetry==$POETRY_VERSION"
-RUN poetry install
+RUN poetry install && \
+    chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
+USER $LOCAL_USER
 
-COPY docs/ docs/
-COPY tests/ tests/
-COPY Makefile .
-
-ENTRYPOINT [""]
+COPY --chown=$LOCAL_USER:$LOCAL_USER docs/ docs/
+COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/
+COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 
 # # stage: migrations
 # FROM base as migrations
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 #
+# USER root
 # RUN apt-get update \
 #   && apt-get install -y --no-install-recommends postgresql-client \
 #   && apt-get clean \
 #   && rm -rf /var/lib/apt/lists/*
+# USER $LOCAL_USER
 #
-# COPY migrations/ migrations/
-# COPY alembic.ini .
+# COPY --chown=$LOCAL_USER:$LOCAL_USER migrations/ migrations/
+# COPY --chown=$LOCAL_USER:$LOCAL_USER alembic.ini .
 #
 # ENTRYPOINT ["./migrations/run_migrations.sh"]
