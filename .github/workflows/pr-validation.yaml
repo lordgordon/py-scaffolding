@@ -28,10 +28,10 @@ jobs:
       - name: Build test image
         uses: docker/build-push-action@v3
         with:
-          tags: ${{IMAGE_NAME}}-testing:${{IMAGE_LOCAL_TAG}}
+          tags: ${{env.IMAGE_NAME}}-testing:${{env.IMAGE_LOCAL_TAG}}
           target: testing
           build-args: |
-            DOCKER_BASE_IMAGE=${{DOCKER_BASE_IMAGE}}
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
             PYSETUP_PATH=/app
           push: false
 #      - name: Build test image
@@ -100,7 +100,7 @@ jobs:
       - name: Run Trivy against production image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{IMAGE_NAME}}:${{IMAGE_LOCAL_TAG}}
+          image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
