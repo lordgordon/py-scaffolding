@@ -1,4 +1,4 @@
-POETRY_RUN := poetry run
+RUN_POETRY := poetry run
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
@@ -20,50 +20,50 @@ update: ## Just update the environment
 	pip3 install --upgrade poetry
 	poetry check
 	@echo "\n${BLUE}Running poetry update...${NC}\n"
-	@${POETRY_RUN} pip install --upgrade pip setuptools
-	@${POETRY_RUN} python --version
+	@${RUN_POETRY} pip install --upgrade pip setuptools
+	@${RUN_POETRY} python --version
 	poetry update
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	@${POETRY_RUN} pip list -o --not-required --outdated
+	@${RUN_POETRY} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	cp -f pre-commit.sh .git/hooks/pre-commit
-	@${POETRY_RUN} pip-audit --desc
+	@${RUN_POETRY} pip-audit --desc
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
-	@${POETRY_RUN} black .
-	@${POETRY_RUN} isort .
-	@${POETRY_RUN} pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
+	@${RUN_POETRY} black .
+	@${RUN_POETRY} isort .
+	@${RUN_POETRY} pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
 
 lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${POETRY_RUN} mypy py_scaffolding tests
+	@${RUN_POETRY} mypy py_scaffolding tests
 
 lint-base: lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${POETRY_RUN} bandit -r py_scaffolding
+	@${RUN_POETRY} bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
-	@${POETRY_RUN} pylint py_scaffolding tests
+	@${RUN_POETRY} pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
-	@${POETRY_RUN} doc8 docs
+	@${RUN_POETRY} doc8 docs
 
 lint: autolint lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
-	@${POETRY_RUN} coverage erase;
-	@${POETRY_RUN} coverage run -m pytest \
+	@${RUN_POETRY} coverage erase;
+	@${RUN_POETRY} coverage run -m pytest \
 		--junitxml=junit/test-results.xml \
 		--hypothesis-show-statistics \
 		--doctest-modules
-	@${POETRY_RUN} coverage report
-	@${POETRY_RUN} coverage html
-	@${POETRY_RUN} coverage xml
+	@${RUN_POETRY} coverage report
+	@${RUN_POETRY} coverage html
+	@${RUN_POETRY} coverage xml
 
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "htmlcov"; ${POETRY_RUN} python -OO -m http.server
+	@cd "htmlcov"; ${RUN_POETRY} python -OO -m http.server
 
 doc: ## Compile and update the internal documentation
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
@@ -72,7 +72,7 @@ doc: ## Compile and update the internal documentation
 serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "docs/_build/html"; ${POETRY_RUN} python -OO -m http.server
+	@cd "docs/_build/html"; ${RUN_POETRY} python -OO -m http.server
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
@@ -91,7 +91,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	-docker image rm ${DOCKER_BASE_IMAGE}
 
 run-locally: ## Execute the main entry point locally (with Poetry)
-	@${POETRY_RUN} python -OO main.py
+	@${RUN_POETRY} python -OO main.py
 
 run-shell: ## Open a shell in the Docker image
 	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} /bin/bash
