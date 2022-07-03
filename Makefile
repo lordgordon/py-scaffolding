@@ -108,7 +108,7 @@ vulnscan: ## Execute Trivy scanner dockerized against this repo
 	${RUN_TRIVY} version
 	${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
 	${RUN_TRIVY} fs --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL --no-progress .
-	${RUN_TRIVY} rootfs --exit-code 1 --ignore-unfixed --security-checks "vuln,config" --no-progress /
+	${RUN_TRIVY} rootfs --exit-code 1 --ignore-unfixed --vuln-type "os,library" --security-checks "vuln,config" --no-progress /
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
