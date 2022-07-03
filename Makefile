@@ -6,7 +6,6 @@ DOCKER_BASE_IMAGE=python:3.10.5-slim-buster
 PYSETUP_PATH=/app
 DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_LOCAL_TAG=current-local
-
 RUN_DOCKER_BUILD := docker build --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
 RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
@@ -106,9 +105,11 @@ build: ## Build Docker image for production
 vulnscan: ## Execute Trivy scanner dockerized against this repo
 	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
 	${RUN_TRIVY} version
-	${RUN_TRIVY} conf --exit-code 1 .
-	${RUN_TRIVY} fs --exit-code 1 --no-progress .
-	${RUN_TRIVY} rootfs --exit-code 1 --no-progress /
+	${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
+	${RUN_TRIVY} fs --exit-code 1 --severity HIGH,CRITICAL --no-progress .
+	${RUN_TRIVY} rootfs --no-progress /
+	# Here we check all severities without failing because most of the times high and critical severities are hard to patch
+	# Review the rootfs list and try to patch accordingly
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
