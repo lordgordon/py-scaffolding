@@ -23,5 +23,22 @@ jobs:
       - run: make cicd
       # build Docker image for Production
       - run: make build
-      # check vulnerabilities
-      - run: make vulnscan
+
+  check-vulnerabilities:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      #- uses: actions/checkout@v2
+      - name: Run Trivy against production image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "py-scaffolding:current-local"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          security-checks: "vuln,config,secret"
+          severity: "CRITICAL,HIGH"
+      # ${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
+      #	${RUN_TRIVY} fs --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL --no-progress .
