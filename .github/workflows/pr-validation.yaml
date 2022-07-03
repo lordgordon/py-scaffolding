@@ -23,3 +23,5 @@ jobs:
       - run: make cicd
       # build Docker image for Production
       - run: make build
+      # check vulnerabilities
+      - run: make vulnscan

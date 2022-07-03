@@ -7,9 +7,9 @@ DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_DEVELOPMENT_TAG=local-dev
 DOCKER_PRODUCTION_TAG=latest
 
-.PHONY: all cicd update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build run-locally run-shell build-for-tests
+.PHONY: all cicd update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build vulnscan run-locally run-shell build-for-tests
 
-all: update lint test doc build-for-tests build
+all: update lint test doc build-for-tests build vulnscan
 cicd: update lint test doc
 
 update: ## Just update the environment
@@ -98,6 +98,12 @@ build-for-tests: ## Build Docker image with testing tools
 
 build: ## Build Docker image for production
 	docker build -f Dockerfile --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_PRODUCTION_TAG} .
+
+vulnscan: ## Execute Trivy scanner dockerized against this repo
+	docker build -f Dockerfile --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_DEVELOPMENT_TAG} .
+	docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_DEVELOPMENT_TAG} conf --exit-code 1 .
+	docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_DEVELOPMENT_TAG} fs --exit-code 1 --no-progress .
+	docker run --rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_DEVELOPMENT_TAG} rootfs --exit-code 1 --no-progress /
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \

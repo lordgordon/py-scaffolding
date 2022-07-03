@@ -28,11 +28,18 @@ COPY py_scaffolding/ py_scaffolding/
 COPY main.py .
 RUN poetry build
 
+ENTRYPOINT []
+CMD []
+
 # stage: production image
 FROM base AS production
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 ENTRYPOINT ["python", "-OO", "main.py"]
-CMD []
+
+# stage: vulnerability scanner on prod image
+FROM production AS vulnscan
+COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
+ENTRYPOINT ["trivy"]
 
 # stage: testing
 FROM base AS testing
@@ -47,7 +54,6 @@ COPY tests/ tests/
 COPY Makefile .
 
 ENTRYPOINT [""]
-CMD []
 
 # # stage: migrations
 # FROM base as migrations
@@ -62,4 +68,3 @@ CMD []
 # COPY alembic.ini .
 #
 # ENTRYPOINT ["./migrations/run_migrations.sh"]
-# CMD []
