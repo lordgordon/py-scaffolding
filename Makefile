@@ -103,13 +103,12 @@ build: ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 
 vulnscan: ## Execute Trivy scanner dockerized against this repo
+	## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
 	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
 	${RUN_TRIVY} version
 	${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
-	${RUN_TRIVY} fs --exit-code 1 --severity HIGH,CRITICAL --no-progress .
-	${RUN_TRIVY} rootfs --no-progress /
-	# Here we check all severities without failing because most of the times high and critical severities are hard to patch
-	# Review the rootfs list and try to patch accordingly
+	${RUN_TRIVY} fs --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL --no-progress .
+	${RUN_TRIVY} rootfs --exit-code 1 --ignore-unfixed --security-checks "vuln,config" --no-progress /
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
