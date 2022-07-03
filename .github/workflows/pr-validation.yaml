@@ -15,6 +15,7 @@ env:
   DOCKER_BASE_IMAGE: python:3.10.5-slim-buster
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
+  GITHUB_ARTIFACTS_PATH: artifacts
 
 jobs:
   build-images:
@@ -46,8 +47,8 @@ jobs:
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
-          mkdir -p /workspace/artifacts
-          cd /workspace/artifacts
+          mkdir -p ${GITHUB_ARTIFACTS_PATH}
+          cd ${GITHUB_ARTIFACTS_PATH}
           docker image ls
           docker save ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} | gzip > test.tar.gz
           docker save ${IMAGE_NAME}:${IMAGE_LOCAL_TAG} | gzip > production.tar.gz
@@ -55,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: docker-images
-          path: /workspace/artifacts
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}
           retention-days: 1
 
   run-tests:
@@ -69,11 +70,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: docker-images
-          path: /workspace/artifacts/test.tar.gz
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}/test.tar.gz
       - name: Restore docker image
         run: |
-          cd /workspace/artifacts
-          docker load < test.tar.gz
+          docker load < ${GITHUB_ARTIFACTS_PATH}/test.tar.gz
           docker image ls
       # run tests
       - name: Linters
@@ -95,11 +95,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: docker-images
-          path: /workspace/artifacts/production.tar.gz
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}/production.tar.gz
       - name: Restore docker image
         run: |
-          cd /workspace/artifacts
-          docker load < production.tar.gz
+          docker load < ${GITHUB_ARTIFACTS_PATH}/production.tar.gz
           docker image ls
       # vulnerabilities checks with Trivy
       - name: Run Trivy against production image
