@@ -94,7 +94,7 @@ run-shell: ## Open a shell in the Docker image
 
 build-for-tests: ## Build Docker image with testing tools
 	docker pull ${DOCKER_BASE_IMAGE}
-	docker build -f Dockerfile --target testing -t ${DOCKER_IMAGE_NAME}:${DOCKER_DEVELOPMENT_TAG} .
+	docker build -f Dockerfile --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_DEVELOPMENT_TAG} .
 
 build: ## Build Docker image for production
 	docker build -f Dockerfile --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_PRODUCTION_TAG} .
