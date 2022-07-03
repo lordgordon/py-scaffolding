@@ -3,6 +3,7 @@ My custom Python project scaffolding repository.
 https://github.com/lordgordon/py-scaffolding
 
 ![pr-validation](https://github.com/lordgordon/py-scaffolding/workflows/pr-validation/badge.svg?branch=main)
+[![release](https://github.com/lordgordon/py-scaffolding/actions/workflows/release.yaml/badge.svg)](https://github.com/lordgordon/py-scaffolding/actions/workflows/release.yaml)
 
 ## Requirements and setup
 
