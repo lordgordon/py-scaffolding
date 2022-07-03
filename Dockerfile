@@ -51,7 +51,7 @@ ENTRYPOINT ["python", "-OO", "main.py"]
 
 # stage: vulnerability scanner on prod image
 FROM production AS vulnscan
-COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
+COPY --from=aquasec/trivy:0.29.2 /usr/local/bin/trivy /usr/local/bin/trivy
 ENTRYPOINT ["trivy"]
 
 # stage: testing
