@@ -30,6 +30,7 @@ jobs:
     steps:
       # checkout the repo
       #- uses: actions/checkout@v2
+      - run: "docker image ls"
       - name: Run Trivy against production image
         uses: aquasecurity/trivy-action@master
         with:
