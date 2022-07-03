@@ -66,10 +66,26 @@ jobs:
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build migrations image
+        id: build_migrations
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{env.IMAGE_NAME}}-migrations:${{env.IMAGE_LOCAL_TAG}}
+          builder: ${{ steps.buildx.outputs.name }}
+          target: migrations
+          build-args: |
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
+            PYSETUP_PATH=/app
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       - name: Test image digest
         run: echo ${{ steps.build_test.outputs.digest }}
       - name: Production image digest
         run: echo ${{ steps.build_production.outputs.digest }}
+      - name: Migrations image digest
+        run: echo ${{ steps.build_migrations.outputs.digest }}
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
