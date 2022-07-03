@@ -129,7 +129,20 @@ jobs:
           docker load < ${GITHUB_ARTIFACTS_PATH}/production.tar.gz
           docker image ls
       # vulnerabilities checks with Trivy
-      - name: Run Trivy against production image
+      - name: Check config
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "conf"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+      - name: Check repository
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          ignore-unfixed: true
+          format: "table"
+          severity: "HIGH,CRITICAL"
+      - name: Check productionimage
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
@@ -138,6 +151,4 @@ jobs:
           ignore-unfixed: true
           vuln-type: "os,library"
           security-checks: "vuln,config,secret"
-          severity: "CRITICAL,HIGH"
-      # ${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
-      #	${RUN_TRIVY} fs --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL --no-progress .
+          severity: "HIGH,CRITICAL"
