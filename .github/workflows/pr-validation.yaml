@@ -26,7 +26,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: ls -lsa
       # build images
-      - uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -35,9 +37,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build test image
+        id: build_test
         uses: docker/build-push-action@v3
         with:
           tags: ${{env.IMAGE_NAME}}-testing:${{env.IMAGE_LOCAL_TAG}}
+          builder: ${{ steps.buildx.outputs.name }}
           target: testing
           build-args: |
             DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
@@ -47,9 +51,11 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       - name: Build production image
+        id: build_production
         uses: docker/build-push-action@v3
         with:
           tags: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
+          builder: ${{ steps.buildx.outputs.name }}
           target: production
           build-args: |
             DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
@@ -58,6 +64,10 @@ jobs:
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Test image digest
+        run: echo ${{ steps.build_test.outputs.digest }}
+      - name: Production image digest
+        run: echo ${{ steps.build_production.outputs.digest }}
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
