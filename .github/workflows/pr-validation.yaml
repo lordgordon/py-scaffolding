@@ -102,12 +102,12 @@ jobs:
           docker image ls
       # run tests
       - name: Linters
-        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make lint
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make lint
       - name: Unit tests
-        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make test
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make test
         # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
       - name: Documentation
-        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make doc
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make doc
 
   check-vulnerabilities:
     name: Check vulnerabilities
