@@ -133,25 +133,49 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
-          format: "table"
+          format: "sarif"
           severity: "HIGH,CRITICAL"
-          ide-progress: true
+          hide-progress: true
+          ignore-unfixed: true
           exit-code: "1"
+          output: "trivy-config-results.sarif"
       - name: Check repository
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "fs"
-          ignore-unfixed: true
-          format: "table"
-          exit-code: "1"
+          format: "sarif"
           severity: "HIGH,CRITICAL"
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: "1"
+          output: "trivy-fs-results.sarif"
       - name: Check production image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
-          format: "table"
-          exit-code: "1"
+          format: "sarif"
+          severity: "HIGH,CRITICAL"
+          hide-progress: true
           ignore-unfixed: true
+          exit-code: "1"
           vuln-type: "os,library"
           security-checks: "vuln,config,secret"
-          severity: "HIGH,CRITICAL"
+          output: "trivy-image-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-config-results.sarif"
+          category: trivy-fs
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-fs-results.sarif"
+          category: trivy-config
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-image-results.sarif"
+          category: trivy-image
