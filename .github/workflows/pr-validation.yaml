@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: ls -lsa
       # prepare Docker environment
-      uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-buildx-action@v1
       # build images
       - name: Build test image
         run: make build-for-tests
