@@ -15,13 +15,17 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
 ENV VENV_PATH="$PYSETUP_PATH/.venv"
 ENV PATH="$VENV_PATH/bin:$PATH"
 
+# create non root user
 RUN mkdir $PYSETUP_PATH && \
     groupadd --system $LOCAL_USER && \
     useradd --no-log-init --create-home --system --shell /bin/bash -g $LOCAL_USER $LOCAL_USER && \
     chown $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
+
+# update the base image to latest security fixes
+RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
+
 WORKDIR $PYSETUP_PATH
 USER $LOCAL_USER
-
 ENTRYPOINT []
 CMD []
 
@@ -54,7 +58,7 @@ FROM base AS testing
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 
 USER root
-RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 RUN poetry install && \
     chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
@@ -69,10 +73,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 # COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 #
 # USER root
-# RUN apt-get update \
-#   && apt-get install -y --no-install-recommends postgresql-client \
-#   && apt-get clean \
-#   && rm -rf /var/lib/apt/lists/*
+# RUN apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
 # USER $LOCAL_USER
 #
 # COPY --chown=$LOCAL_USER:$LOCAL_USER migrations/ migrations/
