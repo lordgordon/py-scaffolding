@@ -83,7 +83,7 @@ make build
 
 Then:
 ```sh
-docker run --rm -it py-scaffolding:latest
+docker run --rm -it py-scaffolding:current-local
 ```
 
 ### Serving commands
