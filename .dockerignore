@@ -20,3 +20,5 @@
 **/venv
 **/.venv
 **/.github
+**/.trivy-cache
+**/artifacts

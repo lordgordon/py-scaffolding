@@ -1,5 +1,6 @@
 # Workflow to validate a PR
 name: pr-validation
+
 on:
   push:
     branches:
@@ -8,18 +9,187 @@ on:
     branches:
       - main
   workflow_dispatch:
+
+env:
+  # keep this aligned with Makefile
+  DOCKER_BASE_IMAGE: python:3.10.5-slim-buster
+  IMAGE_NAME: py-scaffolding
+  IMAGE_LOCAL_TAG: current-local
+  GITHUB_ARTIFACTS_PATH: artifacts
+
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  build-images:
+    name: Build images
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    # Don't run the pipeline when the commit message includes skip-ci
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
-      # prepare the build environment
-      - uses: actions/setup-python@v2
+      - run: ls -lsa
+      # build images
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          python-version: "3.10"
-      - run: pip install poetry
-      # main step
-      - run: make cicd
-      # build Docker image for Production
-      - run: make build
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build test image
+        id: build_test
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{env.IMAGE_NAME}}-testing:${{env.IMAGE_LOCAL_TAG}}
+          builder: ${{ steps.buildx.outputs.name }}
+          target: testing
+          build-args: |
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
+            PYSETUP_PATH=/app
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build production image
+        id: build_production
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
+          builder: ${{ steps.buildx.outputs.name }}
+          target: production
+          build-args: |
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
+            PYSETUP_PATH=/app
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Test image digest
+        run: echo ${{ steps.build_test.outputs.digest }}
+      - name: Production image digest
+        run: echo ${{ steps.build_production.outputs.digest }}
+      # build image artifact to share in the next jobs
+      - name: Prepare artifacts
+        run: |
+          mkdir -p ${GITHUB_ARTIFACTS_PATH}
+          cd ${GITHUB_ARTIFACTS_PATH}
+          docker image ls
+          docker save ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} | gzip > test.tar.gz
+          docker save ${IMAGE_NAME}:${IMAGE_LOCAL_TAG} | gzip > production.tar.gz
+          ls -lsa
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}
+          retention-days: 1
+      - # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  run-tests:
+    name: Run tests
+    needs: build-images
+    runs-on: ubuntu-22.04
+    steps:
+      # checkout the repo
+      - uses: actions/checkout@v2
+      # restore docker images
+      - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-images
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}
+      - name: Restore docker image
+        run: |
+          ls -lsa ${GITHUB_ARTIFACTS_PATH}
+          docker load < ${GITHUB_ARTIFACTS_PATH}/test.tar.gz
+          docker image ls
+      # run tests
+      - name: Linters
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make lint
+      - name: Unit tests
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make test
+        # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
+      - name: Documentation
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make doc
+
+  check-vulnerabilities:
+    name: Check vulnerabilities
+    needs: build-images
+    runs-on: ubuntu-22.04
+    steps:
+      # checkout the repo
+      - uses: actions/checkout@v2
+      # restore docker images
+      - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-images
+          path: ${{env.GITHUB_ARTIFACTS_PATH}}
+      - name: Restore docker image
+        run: |
+          ls -lsa ${GITHUB_ARTIFACTS_PATH}
+          docker load < ${GITHUB_ARTIFACTS_PATH}/production.tar.gz
+          docker image ls
+      # vulnerabilities checks with Trivy
+      - name: Prepare empty files
+        run: |
+          touch trivy-config-results.sarif trivy-fs-results.sarif trivy-image-results.sarif
+      - name: Check config
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "config"
+          format: "sarif"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: true
+          exit-code: "1"
+          output: "trivy-config-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-config-results.sarif"
+          category: trivy-fs
+      - name: Check repository
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: "sarif"
+          severity: "HIGH,CRITICAL"
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: "1"
+          output: "trivy-fs-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-fs-results.sarif"
+          category: trivy-config
+      - name: Check production image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
+          format: "sarif"
+          severity: "HIGH,CRITICAL"
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: "1"
+          vuln-type: "os,library"
+          security-checks: "vuln,config,secret"
+          output: "trivy-image-results.sarif"
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-image-results.sarif"
+          category: trivy-image
