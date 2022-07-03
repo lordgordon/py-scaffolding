@@ -1,5 +1,6 @@
 # Workflow to validate a PR
 name: pr-validation
+
 on:
   push:
     branches:
@@ -8,33 +9,83 @@ on:
     branches:
       - main
   workflow_dispatch:
+
+env:
+  IMAGE_NAME: py-scaffolding
+  IMAGE_LOCAL_TAG: current-local
+
 jobs:
-  build-and-test:
+  build-images:
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
       - uses: actions/checkout@v2
-      # prepare the build environment
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      - run: pip install poetry
-      # main step
-      - run: make cicd
-      # build Docker image for Production
+      # build images
+      - run: make build-for-tests
       - run: make build
+      - run: docker image ls
+      # build image artifact to share in the next jobs
+      - name: Prepare artifacts
+        run: |
+          mkdir -p /workspace/artifacts
+          cd /workspace/artifacts
+          docker save ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} | gzip > test.tar.gz
+          docker save ${IMAGE_NAME}:${IMAGE_LOCAL_TAG} | gzip > production.tar.gz
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: /workspace/artifacts
+          retention-days: 1
 
-  check-vulnerabilities:
-    needs: build-and-test
+  run-tests:
+    needs: build-images
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
-      #- uses: actions/checkout@v2
-      - run: "docker image ls"
+      - uses: actions/checkout@v2
+      # restore docker images
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-images
+          path: /workspace/artifacts/test.tar.gz
+      - name: Restore docker image
+        run: |
+          cd /workspace/artifacts
+          docker load < test.tar.gz
+      - run: docker image ls
+      # run tests
+      - name: Linters
+        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make lint
+      - name: Unit tests
+        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make test
+        # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
+      - name: Documentation
+        run: docker run --rm ${IMAGE_NAME}-tests:${IMAGE_LOCAL_TAG} make doc
+
+  check-vulnerabilities:
+    needs: build-images
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - uses: actions/checkout@v2
+      # restore docker images
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-images
+          path: /workspace/artifacts/production.tar.gz
+      - name: Restore docker image
+        run: |
+          cd /workspace/artifacts
+          docker load < production.tar.gz
+      - run: docker image ls
+      # vulnerabilities checks with Trivy
       - name: Run Trivy against production image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "py-scaffolding:current-local"
+          image-ref: "${IMAGE_NAME}:${IMAGE_LOCAL_TAG}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
