@@ -34,10 +34,15 @@ jobs:
             DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
             PYSETUP_PATH=/app
           push: false
-#      - name: Build test image
-#        run: make build-for-tests
-#      - name: Build production image
-#        run: make build
+      - name: Build production image
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
+          target: production
+          build-args: |
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
+            PYSETUP_PATH=/app
+          push: false
       # build image artifact to share in the next jobs
       - name: Prepare artifacts
         run: |
