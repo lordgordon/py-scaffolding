@@ -7,7 +7,7 @@ https://github.com/lordgordon/py-scaffolding
 
 ## Requirements and setup
 
-- Python 3.10 (`pip3` must be available) with installed globally:
+- Python 3.11 (`pip3` must be available) with installed globally:
   - [Poetry](https://python-poetry.org) installed globally.
   - [pre-commit](https://pre-commit.com) installed globally.
 - Linux/UNIX compatible system with `make` command.
@@ -15,10 +15,30 @@ https://github.com/lordgordon/py-scaffolding
 
 Then, to set everything up on macOS:
 ```sh
-brew install python@3.10 pre-commit
+brew install python@3.11 pre-commit
 pip3 install poetry
 pre-commit install
 make
+```
+
+:point_right: **Note**: `brew` does not automatically link `python3` to the newest Python version when it could breaks
+dependencies. To force this, at your own risk, one could add to its `.zshrc`:
+
+```bash
+# Python Homebrew
+current_python="3.11";
+current_python_path="/usr/local/opt/python@${current_python}";
+export PATH="${current_python_path}/bin:$PATH";
+export LDFLAGS="-L${current_python}/lib";
+
+# force current_python to overcome brew not linking newest Python version
+alias wheel3="${current_python_path}/bin/wheel${current_python}";
+alias python3="${current_python_path}/bin/python${current_python}";
+alias pip3="${current_python_path}/bin/pip${current_python}";
+alias pydoc3="${current_python_path}/bin/pydoc${current_python}";
+alias 2to3="${current_python_path}/bin/2to3-${current_python}";
+alias idle="${current_python_path}/bin/idle${current_python}";
+alias python3-config="${current_python_path}/bin/python${current_python}-config";
 ```
 
 ### Configure VS Code
