@@ -3,7 +3,8 @@ My custom Python project scaffolding repository: https://github.com/lordgordon/p
 
 Docker images published at https://hub.docker.com/repository/docker/lordgordon/py-scaffolding.
 
-Docker images published at https://hub.docker.com/repository/docker/lordgordon/py-scaffolding.
+---
+
 ![pr-validation](https://github.com/lordgordon/py-scaffolding/workflows/pr-validation/badge.svg?branch=main)
 [![release](https://github.com/lordgordon/py-scaffolding/actions/workflows/release.yaml/badge.svg)](https://github.com/lordgordon/py-scaffolding/actions/workflows/release.yaml)
 
