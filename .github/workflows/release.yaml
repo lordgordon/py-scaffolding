@@ -35,6 +35,8 @@ jobs:
           docker pull "${current_image}"
           docker tag "${current_image}" "${image}:latest"
           docker tag "${current_image}" "${image}:${RELEASE_TAG}"
+          docker push "${image}:latest"
+          docker push "${image}:${RELEASE_TAG}"
         env:
           username: ${{secrets.DOCKER_HUB_USERNAME}}
           password: ${{secrets.DOCKER_HUB_ACCESS_TOKEN}}
