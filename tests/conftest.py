@@ -1,12 +1,11 @@
 """Common PyTest setup."""
 # pylint: disable=missing-function-docstring
 
-from __future__ import annotations
-
 import json
 import logging
+from collections.abc import Iterator
 from io import StringIO
-from typing import Any, Iterator
+from typing import Any
 
 import pytest
 

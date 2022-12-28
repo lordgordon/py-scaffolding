@@ -1,7 +1,6 @@
 """
 Configure the logger with a structured JSON log format.
 """
-from __future__ import annotations
 
 import logging
 import sys
@@ -86,7 +85,6 @@ def _set_up_structlog() -> None:  # pragma: no cover
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.JSONRenderer(sort_keys=False),
         ],
-        context_class=structlog.threadlocal.wrap_dict(dict),
         logger_factory=structlog.stdlib.LoggerFactory(),
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
