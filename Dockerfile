@@ -22,9 +22,9 @@ RUN mkdir $PYSETUP_PATH && \
     useradd --no-log-init --create-home --system --shell /bin/bash -g $LOCAL_USER $LOCAL_USER && \
     chown $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
 
-# update the base image to latest security fixes
-RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
-RUN /usr/local/bin/python3 -m pip install --upgrade setuptools pip
+# update the base image to latest security fixes and tools
+RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/* && \
+    /usr/local/bin/python3 -m pip install --upgrade setuptools pip
 
 WORKDIR $PYSETUP_PATH
 USER $LOCAL_USER
