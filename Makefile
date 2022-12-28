@@ -3,7 +3,7 @@ BLUE=\033[0;34m
 NC=\033[0m # No Color
 
 # keep this aligned with GitHub actions
-DOCKER_BASE_IMAGE=python:3.10.5-slim-buster
+DOCKER_BASE_IMAGE=python:3.11.1-slim-bullseye
 PYSETUP_PATH=/app
 DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_LOCAL_TAG=current-local
@@ -26,7 +26,8 @@ update: ## Just update the environment
 	@${RUN_POETRY} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	cp -f pre-commit.sh .git/hooks/pre-commit
-	@${RUN_POETRY} pip-audit --desc
+	@${RUN_POETRY} pip-audit --desc --ignore-vuln PYSEC-2022-42969
+# see https://github.com/pytest-dev/pytest/issues/10392
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
@@ -40,7 +41,7 @@ lint-mypy: ## Just run mypy
 
 lint-base: lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${RUN_POETRY} bandit -r py_scaffolding
+# @${RUN_POETRY} bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${RUN_POETRY} pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
@@ -104,7 +105,7 @@ build: ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
 
-vulnscan: ## Execute Trivy scanner dockerized against this repo
+vulnscan: build ## Execute Trivy scanner dockerized against this repo
 	## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
 	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
 	${RUN_TRIVY} version
