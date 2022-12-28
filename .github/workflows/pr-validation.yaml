@@ -148,9 +148,9 @@ jobs:
         #fixme: if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          tags:
-            - ${IMAGE_NAME}:main
-            - ${IMAGE_NAME}:${{ github.sha }}
+          tags: |
+            ${IMAGE_NAME}:main
+            ${IMAGE_NAME}:${{ github.sha }}
           target: production
           build-args: |
             DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
