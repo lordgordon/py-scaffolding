@@ -1,16 +1,41 @@
 # Workflow to tag a new release
 name: release
+
 on:
   workflow_dispatch:
+
+env:
+  # keep this aligned with Makefile and all workflows
+  IMAGE_NAME: py-scaffolding
+  IMAGE_LOCAL_TAG: current-local
+  DOCKER_HUB_REPOSITORY: lordgordon
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  release:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
-      - run: |
+      - name: Set release tag
+        run: |
+          TAG="py-311.$(date '+%Y%m%d')"
+          echo "$TAG"
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
+      - name: Git tag and release
+        run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout main
-          TAG="py-311.$(date '+%Y%m%d')"
-          git tag -a "${TAG}" -m "release ${TAG}"
-          git push origin "${TAG}"
+          git tag -a "${RELEASE_TAG}" -m "release ${RELEASE_TAG}"
+          git push origin "${RELEASE_TAG}"
+      - name: Docker Hub tag and release
+        run: |
+          echo ${password} | docker login -u ${username} --password-stdin
+          image="${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}"
+          current_image="${image}:${tag_sha}"
+          docker pull "${current_image}"
+          docker tag "${current_image}" "${image}:latest"
+          docker tag "${current_image}" "${image}:${RELEASE_TAG}"
+        env:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_ACCESS_TOKEN}}
+          tag_sha: ${{github.sha}}
