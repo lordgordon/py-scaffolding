@@ -12,8 +12,7 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
   PYTHONHASHSEED=random \
   PYTHONUNBUFFERED=1 \
   LOCAL_USER=alice \
-  POETRY_VERSION=1.3.1 \
-  TRIVY_VERSION=0.35.0
+  POETRY_VERSION=1.3.1
 ENV VENV_PATH="$PYSETUP_PATH/.venv"
 ENV PATH="$VENV_PATH/bin:$PATH"
 
@@ -52,7 +51,7 @@ ENTRYPOINT ["python", "-OO", "main.py"]
 
 # stage: vulnerability scanner on prod image
 FROM production AS vulnscan
-COPY --from=aquasec/trivy:$TRIVY_VERSION /usr/local/bin/trivy /usr/local/bin/trivy
+COPY --from=aquasec/trivy:0.35.0 /usr/local/bin/trivy /usr/local/bin/trivy
 ENTRYPOINT ["trivy"]
 
 # stage: testing
