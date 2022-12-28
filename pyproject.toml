@@ -6,25 +6,25 @@ authors = ["Nicholas Fiorentini <lordgordon@users.noreply.github.com>"]
 license = "MIT License"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-pydantic = "~1.9"
-structlog = "~21.5"
+python = "^3.11"
+pydantic = "1.10.2"
+structlog = "22.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "~6"
 pylint = "~2"
-mypy = "~0.961"
+mypy = "0.991"
 bandit = "~1.7"
-black = "~22.6"
+black = "~22"
 isort = "~5"
-pytest-bdd = "~5"
-coverage = {extras = ["toml"], version = "~6"}
+pytest-bdd = "~6"
+coverage = {extras = ["toml"], version = "~7"}
 Sphinx = "~5"
 commitizen = "~2"
-Faker = "~13"
+Faker = "~15"
 hypothesis = "~6"
-doc8 = "~0.11"
-pyupgrade = "~2.34"
+doc8 = "~1.1"
+pyupgrade = "~3.3"
 pip-audit = "~2.4"
 ipdb = "~0.13"
 ipython = "~8.4"
@@ -35,7 +35,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 90
-target-version = ["py38"]
+target-version = ["py311"]
 
 [tool.coverage.run]
 branch = true
@@ -92,7 +92,7 @@ version_files = [
 ]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 plugins = ["pydantic.mypy"]
 
 check_untyped_defs = true

@@ -3,7 +3,7 @@ BLUE=\033[0;34m
 NC=\033[0m # No Color
 
 # keep this aligned with GitHub actions
-DOCKER_BASE_IMAGE=python:3.10.5-slim-buster
+DOCKER_BASE_IMAGE=python:3.11.1-slim-buster
 PYSETUP_PATH=/app
 DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_LOCAL_TAG=current-local
