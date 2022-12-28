@@ -24,6 +24,7 @@ RUN mkdir $PYSETUP_PATH && \
 
 # update the base image to latest security fixes
 RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
+RUN /usr/local/bin/python3 -m pip install --upgrade setuptools pip
 
 WORKDIR $PYSETUP_PATH
 USER $LOCAL_USER
