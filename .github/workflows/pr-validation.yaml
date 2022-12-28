@@ -78,13 +78,12 @@ jobs:
           images: ${{env.IMAGE_NAME}}
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=sha,format=long,prefix={{branch}}-
       - name: Publish production image to Docker Hub
         id: publish_production
         #if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
-          images: ${{env.IMAGE_NAME}}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           builder: ${{ steps.buildx.outputs.name }}
