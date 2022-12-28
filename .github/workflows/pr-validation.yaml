@@ -67,10 +67,34 @@ jobs:
           build-args: |
             DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
             PYSETUP_PATH=/app
-          push: true
+          push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta_for_docker
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{env.IMAGE_NAME}}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+      - name: Publish production image to Docker Hub
+        id: publish_production
+        #if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v3
+        with:
+          images: ${{env.IMAGE_NAME}}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          builder: ${{ steps.buildx.outputs.name }}
+          target: production
+          build-args: |
+            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
+            PYSETUP_PATH=/app
+          push: true
+          load: false
+          cache-from: type=local,src=/tmp/.buildx-cache
       - name: Build migrations image
         id: build_migrations
         uses: docker/build-push-action@v3
