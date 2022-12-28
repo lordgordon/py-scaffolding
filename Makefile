@@ -26,7 +26,8 @@ update: ## Just update the environment
 	@${RUN_POETRY} pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	cp -f pre-commit.sh .git/hooks/pre-commit
-	@${RUN_POETRY} pip-audit --desc
+	@${RUN_POETRY} pip-audit --desc --ignore-vuln PYSEC-2022-42969
+# see https://github.com/pytest-dev/pytest/issues/10392
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
@@ -40,7 +41,7 @@ lint-mypy: ## Just run mypy
 
 lint-base: lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${RUN_POETRY} bandit -r py_scaffolding
+# @${RUN_POETRY} bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${RUN_POETRY} pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
