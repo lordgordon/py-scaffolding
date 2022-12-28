@@ -95,6 +95,10 @@ version_files = [
 python_version = "3.11"
 plugins = ["pydantic.mypy"]
 
+enable_error_code = [
+  "truthy-bool",
+]
+
 check_untyped_defs = true
 disallow_any_generics = false
 disallow_untyped_calls = true
