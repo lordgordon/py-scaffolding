@@ -27,7 +27,7 @@ doc8 = "~1.1"
 pyupgrade = "~3.3"
 pip-audit = "~2.4"
 ipdb = "~0.13"
-ipython = "~8.4"
+ipython = "~8.10"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
