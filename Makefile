@@ -1,4 +1,4 @@
-RUN_POETRY := poetry run
+POETRY := python3 -m poetry
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
@@ -10,55 +10,61 @@ DOCKER_LOCAL_TAG=current-local
 RUN_DOCKER_BUILD := docker build --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
 RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
-.PHONY: all update autolint lint-mypy lint-base lint test doc serve-doc serve-coverage clean help build vulnscan run-locally run-shell build-for-tests
+.PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check run-locally run-shell \
+				serve-coverage serve-doc test update vulnscan
 
 all: update lint test doc build-for-tests build vulnscan
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
-	pip3 install --upgrade poetry
-	poetry check
+	pip3 install --upgrade poetry pre-commit
+	@${POETRY} check
 	@echo "\n${BLUE}Running poetry update...${NC}\n"
-	@${RUN_POETRY} pip install --upgrade pip setuptools
-	@${RUN_POETRY} python --version
-	poetry update
+	@${POETRY} run pip install --upgrade pip setuptools
+	@${POETRY} run python --version
+	@${POETRY} lock --no-update
+	@${POETRY} install
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	@${RUN_POETRY} pip list -o --not-required --outdated
+	@${POETRY} run pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	cp -f pre-commit.sh .git/hooks/pre-commit
-	@${RUN_POETRY} pip-audit --desc --ignore-vuln PYSEC-2022-42969
+	pre-commit install
+	@${POETRY} run pip-audit --desc --ignore-vuln PYSEC-2022-42969
 # see https://github.com/pytest-dev/pytest/issues/10392
+
+poetry-check: ## Verify Poetry lockfile status
+	@${POETRY} lock --check
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
-	@${RUN_POETRY} black .
-	@${RUN_POETRY} isort .
-	@${RUN_POETRY} pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
+	@${POETRY} run black .
+	@${POETRY} run isort .
+	@${POETRY} run pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
 
 lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${RUN_POETRY} mypy py_scaffolding tests
+	@${POETRY} run mypy py_scaffolding tests
 
-lint-base: lint-mypy ## Just run the linters without autolinting
+lint-base: poetry-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
 # @${RUN_POETRY} bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
-	@${RUN_POETRY} pylint py_scaffolding tests
+	@${POETRY} run pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
-	@${RUN_POETRY} doc8 docs
+	@${POETRY} run doc8 docs
 
 lint: autolint lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
-	@${RUN_POETRY} coverage erase;
-	@${RUN_POETRY} coverage run -m pytest \
+	@${POETRY} run coverage erase;
+	@${POETRY} run coverage run -m pytest \
 		--junitxml=junit/test-results.xml \
 		--hypothesis-show-statistics \
 		--doctest-modules
-	@${RUN_POETRY} coverage report
-	@${RUN_POETRY} coverage html
-	@${RUN_POETRY} coverage xml
+	@${POETRY} run coverage report
+	@${POETRY} run coverage html
+	@${POETRY} run coverage xml
 
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
@@ -81,10 +87,10 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	find . -type d -name "__pycache__" -delete
 	-cd docs; make clean
 	@echo "\n${BLUE}Removing poetry environment...${NC}\n"
-	poetry env list
-	poetry env info -p
-	poetry env remove $(shell poetry run which python)
-	poetry env list
+	@${POETRY} env list
+	@${POETRY} env info -p
+	@${POETRY} env remove $(shell poetry run which python)
+	@${POETRY} env list
 	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
@@ -92,7 +98,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	-docker image rm ${DOCKER_BASE_IMAGE}
 
 run-locally: ## Execute the main entry point locally (with Poetry)
-	@${RUN_POETRY} python -OO main.py
+	@${POETRY} run python -OO main.py
 
 run-shell: ## Open a shell in the Docker image
 	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} /bin/bash

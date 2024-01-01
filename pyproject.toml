@@ -11,23 +11,23 @@ pydantic = "1.10.2"
 structlog = "22.3.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "~6"
-pylint = "~2"
-mypy = "0.991"
 # bandit = "~1.7" currently commented due to https://github.com/PyCQA/bandit/issues/976 (GHSA-hcpj-qp55-gfph)
 black = "~22"
-isort = "~5"
-pytest-bdd = "~6"
-coverage = {extras = ["toml"], version = "~7"}
-Sphinx = "~5"
 commitizen = "~2"
+coverage = {extras = ["toml"], version = "~7"}
+doc8 = "~1.1"
 Faker = "~15"
 hypothesis = "~6"
-doc8 = "~1.1"
-pyupgrade = "~3.3"
-pip-audit = "~2.4"
 ipdb = "~0.13"
 ipython = "~8.4"
+isort = "~5"
+mypy = "0.991"
+Sphinx = "~5"
+pip-audit = "~2.4"
+pylint = "~2"
+pytest = "~6"
+pytest-bdd = "~6"
+pyupgrade = "~3.3"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
