@@ -12,6 +12,9 @@ vulnerability:
     - library
   ignore-unfixed: true
 scan:
+  skip-dirs:
+    - .venv
+    - .git
   scanners:
     - vuln
     - misconfig
