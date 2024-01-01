@@ -13,7 +13,7 @@ RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:
 .PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check pre-commit-all \
 				run-locally run-shell serve-coverage serve-doc test update vulnscan
 
-all: update lint test doc build-for-tests build vulnscan
+all: lint test doc build-for-tests build vulnscan
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -32,7 +32,7 @@ update: ## Just update the environment
 	@${POETRY} run pip-audit --desc
 
 poetry-check: ## Verify Poetry lockfile status
-	@${POETRY} lock --check
+	@${POETRY} check --lock
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
