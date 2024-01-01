@@ -8,12 +8,12 @@ PYSETUP_PATH=/app
 DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_LOCAL_TAG=current-local
 RUN_DOCKER_BUILD := docker buildx build --platform linux/amd64 --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
-RUN_TRIVY := docker run --platform linux/amd64 --rm -v $(shell pwd):/app {DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
+RUN_TRIVY := docker run --platform linux/amd64 --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
 .PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check pre-commit-all \
 				run-locally run-shell serve-coverage serve-doc test update vulnscan
 
-all: lint test doc build-for-tests vulnscan
+all: lint test doc build-for-tests build vulnscan
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -110,13 +110,13 @@ build: build-for-tests ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
 
-vulnscan: build ## Execute Trivy scanner dockerized against this repo
+vulnscan: ## Execute Trivy scanner dockerized against this repo
 	## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
 	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
 	${RUN_TRIVY} version
-	${RUN_TRIVY} conf --exit-code 1 --severity HIGH,CRITICAL .
-	${RUN_TRIVY} fs --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL --no-progress .
-	${RUN_TRIVY} rootfs --exit-code 1 --ignore-unfixed --vuln-type "os,library" --security-checks "vuln,config" --no-progress /
+	${RUN_TRIVY} config --config trivy.yaml .
+	${RUN_TRIVY} fs --config trivy.yaml .
+	${RUN_TRIVY} rootfs --config trivy.yaml /
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \

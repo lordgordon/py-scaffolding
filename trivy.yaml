@@ -1,0 +1,25 @@
+exit-code: 0
+cache:
+  dir: ./.trivy-cache
+severity:
+  - HIGH
+  - CRITICAL
+db:
+  no-progress: true
+vulnerability:
+  type:
+    - os
+    - library
+  ignore-unfixed: true
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - secret
+    - license
+misconfiguration:
+  include-non-failures: false
+  scanners:
+    - terraform
+  terraform:
+    exclude-downloaded-modules: true
