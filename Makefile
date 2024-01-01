@@ -38,7 +38,7 @@ autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
 	@${POETRY} run black .
 	@${POETRY} run isort .
-	@${POETRY} run pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
+	@${POETRY} run pyupgrade --py311-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
 
 pre-commit-all:
 	pre-commit run --all-files
