@@ -12,7 +12,7 @@ on:
 
 env:
   # keep this aligned with Makefile and all workflows
-  DOCKER_BASE_IMAGE: python:3.11.1-slim-bullseye
+  DOCKER_BASE_IMAGE: python:3.11.7-slim-bullseye
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
   GITHUB_ARTIFACTS_PATH: artifacts
@@ -26,7 +26,7 @@ jobs:
     # Don't run the pipeline when the commit message includes skip-ci
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: ls -lsa
       # build images
       - name: Set up Docker Buildx
@@ -97,15 +97,15 @@ jobs:
           docker save ${IMAGE_NAME}:${IMAGE_LOCAL_TAG} | gzip > production.tar.gz
           ls -lsa
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-images
           path: ${{env.GITHUB_ARTIFACTS_PATH}}
           retention-days: 1
-      - # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
@@ -116,11 +116,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: docker-images
           path: ${{env.GITHUB_ARTIFACTS_PATH}}
@@ -165,11 +165,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: docker-images
           path: ${{env.GITHUB_ARTIFACTS_PATH}}
@@ -187,8 +187,7 @@ jobs:
         with:
           scan-type: "config"
           format: "sarif"
-          severity: "HIGH,CRITICAL"
-          ignore-unfixed: true
+          trivy-config: trivy.yaml
           exit-code: "1"
           output: "trivy-config-results.sarif"
       - name: Upload Trivy results
@@ -202,9 +201,7 @@ jobs:
         with:
           scan-type: "fs"
           format: "sarif"
-          severity: "HIGH,CRITICAL"
-          hide-progress: true
-          ignore-unfixed: true
+          trivy-config: trivy.yaml
           exit-code: "1"
           output: "trivy-fs-results.sarif"
       - name: Upload Trivy results
@@ -218,12 +215,8 @@ jobs:
         with:
           image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
           format: "sarif"
-          severity: "HIGH,CRITICAL"
-          hide-progress: true
-          ignore-unfixed: true
+          trivy-config: trivy.yaml
           exit-code: "1"
-          vuln-type: "os,library"
-          security-checks: "vuln,config,secret"
           output: "trivy-image-results.sarif"
       - name: Upload Trivy results
         uses: github/codeql-action/upload-sarif@v2

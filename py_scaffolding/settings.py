@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseSettings  # pylint: disable=no-name-in-module
+from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):  # pragma: no cover
