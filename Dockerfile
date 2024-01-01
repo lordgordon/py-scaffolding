@@ -44,7 +44,7 @@ USER $LOCAL_USER
 COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml poetry.lock poetry.toml ./
 RUN poetry install --no-root --only main
 
-COPY --chown=$LOCAL_USER:$LOCAL_USER py_scaffolding/ py_scaffolding/
+COPY --chown=$LOCAL_USER:$LOCAL_USER src/ src/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
 COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
 # RUN poetry build
