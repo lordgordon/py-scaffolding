@@ -2,7 +2,9 @@
 name = "py-scaffolding"
 version = "0.0.1"
 description = "Empty project"
-authors = ["Nicholas Fiorentini <lordgordon@users.noreply.github.com>"]
+authors = [
+  "Nicholas Fiorentini <lordgordon@users.noreply.github.com>",
+]
 license = "MIT License"
 
 [tool.poetry.dependencies]
