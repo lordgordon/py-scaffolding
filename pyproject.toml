@@ -102,8 +102,10 @@ enable_error_code = [
 
 check_untyped_defs = true
 disallow_any_generics = false
+disallow_any_explicit = true
 disallow_untyped_calls = true
 disallow_untyped_decorators = true
+disallow_subclassing_any = true
 ignore_errors = false
 ignore_missing_imports = true
 implicit_reexport = false
