@@ -3,6 +3,9 @@ My custom Python project scaffolding repository: https://github.com/lordgordon/p
 
 Docker images published at https://hub.docker.com/repository/docker/lordgordon/py-scaffolding.
 
+:point_right: Note: to release the project as a Python library, you need to run `poetry build` and add the proper ci/cd
+to publish the library.
+
 ---
 
 ![pr-validation](https://github.com/lordgordon/py-scaffolding/workflows/pr-validation/badge.svg?branch=main)
