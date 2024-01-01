@@ -5,7 +5,6 @@ import json
 import logging
 from collections.abc import Iterator
 from io import StringIO
-from typing import Any
 
 import pytest
 
@@ -13,8 +12,8 @@ import pytest
 class JSONLogIO(StringIO):
     """Helper to capture logs and convert the raw JSON string into a proper dict."""
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
+    def __init__(self, initial_value: str | None = None, newline: str | None = None):
+        super().__init__(initial_value=initial_value, newline=newline)
         self._entries: list[dict] = []
 
     @property
