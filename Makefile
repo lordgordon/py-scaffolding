@@ -38,20 +38,20 @@ autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
 	@${POETRY} run black .
 	@${POETRY} run isort .
-	@${POETRY} run pyupgrade --py311-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
+	@${POETRY} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
 
 pre-commit-all:
 	pre-commit run --all-files
 
 lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${POETRY} run mypy py_scaffolding tests
+	@${POETRY} run mypy src tests
 
 lint-base: poetry-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${POETRY} run bandit -r py_scaffolding
+	@${POETRY} run bandit -r src
 	@echo "\n${BLUE}Running pylint...${NC}\n"
-	@${POETRY} run pylint py_scaffolding tests
+	@${POETRY} run pylint src tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
 	@${POETRY} run python -m doc8 docs
 
