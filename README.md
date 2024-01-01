@@ -15,7 +15,7 @@ Docker images published at https://hub.docker.com/repository/docker/lordgordon/p
 - [Docker](https://www.docker.com/). For macOS users, [colima](https://github.com/abiosoft/colima) is strongly suggested.
 
 Then, to set everything up on macOS:
-```sh
+```shell
 brew install pyenv
 pyenv install
 make
@@ -24,7 +24,7 @@ make
 ## Release and Changelog
 
 Version bump and changelog update:
-```sh
+```shell
 # PATCH
 poetry run cz bump --increment PATCH -ch --dry-run
 # MINOR
@@ -39,16 +39,21 @@ https://commitizen-tools.github.io/commitizen/bump/
 ## Commands
 
 The main command that run everything (lint, test, build):
-```sh
+```shell
 make
 ```
 
 Then, to execute the main entry point with the local Poetry environment:
-```sh
+```shell
 make run-locally
 ```
 
-or open a shell in the Docker image:
+or, to execute the main entry point from Docker:
+```shell
+make run
+```
+
+or, to open a shell in the Docker image:
 ```shell
 make run-shell
 ```
@@ -58,12 +63,12 @@ make run-shell
 ### Run the production image
 
 To run the main entry point with the production image, first build the production image:
-```sh
+```shell
 make build
 ```
 
 Then:
-```sh
+```shell
 docker run --platform linux/amd64 --rm -it py-scaffolding:current-local
 ```
 
@@ -84,5 +89,6 @@ docker run --platform linux/amd64 --rm -it py-scaffolding:current-local
 | `make doc`         | Compile and update the internal documentation.                                                                                                       |
 | `make clean`       | Force a clean environment: remove all temporary files and caches. Start from a new environment. This command allow to start over from a fresh state. |
 | `make build`       | Build the Docker image.                                                                                                                              |
+| `make run`         | Execute the main entry point from Docker.                                                                                                            |
 | `make run-locally` | Execute the main entry point locally (with Poetry).                                                                                                  |
 | `make run-shell`   | Open a shell in the Docker image.                                                                                                                    |

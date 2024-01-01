@@ -11,7 +11,7 @@ RUN_DOCKER_BUILD := docker buildx build --platform linux/amd64 --build-arg DOCKE
 RUN_TRIVY := docker run --platform linux/amd64 --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
 .PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check pre-commit-all \
-				run-locally run-shell serve-coverage serve-doc test update vulnscan
+				run run-locally run-shell serve-coverage serve-doc test update vulnscan
 
 all: lint test doc build-for-tests build vulnscan
 
@@ -60,7 +60,8 @@ lint: autolint pre-commit-all lint-base ## Autolint and code linting
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
 	@${POETRY} run coverage erase;
-	@${POETRY} run coverage run -m pytest \
+	@${POETRY} run python -Im coverage \
+		run -m pytest \
 		--junitxml=junit/test-results.xml \
 		--hypothesis-show-statistics \
 		--doctest-modules
@@ -97,7 +98,10 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	-docker image rm ${DOCKER_BASE_IMAGE}
 
 run-locally: ## Execute the main entry point locally (with Poetry)
-	@${POETRY} run python -OO main.py
+	@${POETRY} run python -I -OO main.py
+
+run: build ## Execute the main entry point in the Docker image
+	docker run --platform linux/amd64 --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
 
 run-shell: build ## Open a shell in the Docker image
 	docker run --platform linux/amd64 --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}

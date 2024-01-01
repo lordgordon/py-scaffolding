@@ -53,7 +53,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
 # stage: production image
 FROM base AS production
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-ENTRYPOINT ["python", "-OO", "main.py"]
+ENTRYPOINT ["python", "-I", "-OO", "main.py"]
 
 # stage: vulnerability scanner on prod image
 FROM production AS vulnscan
