@@ -12,7 +12,7 @@ Docker images published at https://hub.docker.com/repository/docker/lordgordon/p
 
 - [brew](https://brew.sh/).
 - Linux/UNIX compatible system with `make` command.
-- [Docker](https://www.docker.com/).
+- [Docker](https://www.docker.com/). For macOS users, [colima](https://github.com/abiosoft/colima) is strongly suggested.
 
 Then, to set everything up on macOS:
 ```sh
@@ -38,7 +38,7 @@ https://commitizen-tools.github.io/commitizen/bump/
 
 ## Commands
 
-The main command that run everything (full clean excluded):
+The main command that run everything (lint, test, build):
 ```sh
 make
 ```
@@ -64,7 +64,7 @@ make build
 
 Then:
 ```sh
-docker run --rm -it py-scaffolding:current-local
+docker run --platform linux/amd64 --rm -it py-scaffolding:current-local
 ```
 
 ### Serving commands

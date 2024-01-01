@@ -37,8 +37,8 @@ USER root
 RUN pip install -U pip "poetry==$POETRY_VERSION"
 USER $LOCAL_USER
 
-COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml poetry.lock ./
-RUN poetry install --no-dev
+COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml poetry.lock poetry.toml ./
+RUN poetry install --no-root --only main
 
 COPY --chown=$LOCAL_USER:$LOCAL_USER py_scaffolding/ py_scaffolding/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .

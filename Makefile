@@ -7,13 +7,13 @@ DOCKER_BASE_IMAGE=python:3.11.7-slim-bullseye
 PYSETUP_PATH=/app
 DOCKER_IMAGE_NAME=py-scaffolding
 DOCKER_LOCAL_TAG=current-local
-RUN_DOCKER_BUILD := docker build --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
-RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
+RUN_DOCKER_BUILD := docker buildx build --platform linux/amd64 --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
+RUN_TRIVY := docker run --platform linux/amd64 --rm -v $(shell pwd):/app {DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
 .PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check pre-commit-all \
 				run-locally run-shell serve-coverage serve-doc test update vulnscan
 
-all: lint test doc build-for-tests build vulnscan
+all: lint test doc build-for-tests vulnscan
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
@@ -53,7 +53,7 @@ lint-base: poetry-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${POETRY} run pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
-	@${POETRY} run doc8 docs
+	@${POETRY} run python -m doc8 docs
 
 lint: autolint pre-commit-all lint-base ## Autolint and code linting
 
@@ -89,10 +89,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	find . -type d -name "__pycache__" -delete
 	-cd docs; make clean
 	@echo "\n${BLUE}Removing poetry environment...${NC}\n"
-	@${POETRY} env list
-	@${POETRY} env info -p
-	@${POETRY} env remove $(shell poetry run which python)
-	@${POETRY} env list
+	-rm -rf .venv
 	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
@@ -102,14 +99,14 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 run-locally: ## Execute the main entry point locally (with Poetry)
 	@${POETRY} run python -OO main.py
 
-run-shell: ## Open a shell in the Docker image
+run-shell: build ## Open a shell in the Docker image
 	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} /bin/bash
 
 build-for-tests: ## Build Docker image with testing tools
 	docker pull ${DOCKER_BASE_IMAGE}
 	${RUN_DOCKER_BUILD} --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} .
 
-build: ## Build Docker image for production
+build: build-for-tests ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
 
