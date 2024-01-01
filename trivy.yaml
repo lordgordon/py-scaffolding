@@ -19,7 +19,6 @@ scan:
     - vuln
     - misconfig
     - secret
-    - license
 misconfiguration:
   include-non-failures: false
   scanners:
