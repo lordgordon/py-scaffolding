@@ -47,8 +47,7 @@ RUN poetry install --no-root --only main
 COPY --chown=$LOCAL_USER:$LOCAL_USER src/ src/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
 COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
-# RUN poetry build
-# Required only when building libraries
+RUN poetry install --only-root
 
 # stage: production image
 FROM base AS production

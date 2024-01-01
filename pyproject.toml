@@ -97,7 +97,7 @@ max-line-length = "120"
 [tool.commitizen]
 version = "0.0.1"
 version_files = [
-    "src/__version__.py",
+    "src/py_scaffolding/__version__.py",
     "pyproject.toml:version"
 ]
 
