@@ -12,7 +12,7 @@ on:
 
 env:
   # keep this aligned with Makefile and all workflows
-  DOCKER_BASE_IMAGE: python:3.11.1-slim-bullseye
+  DOCKER_BASE_IMAGE: python:3.11.7-slim-bullseye
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
   GITHUB_ARTIFACTS_PATH: artifacts
@@ -26,7 +26,7 @@ jobs:
     # Don't run the pipeline when the commit message includes skip-ci
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: ls -lsa
       # build images
       - name: Set up Docker Buildx
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts
@@ -165,7 +165,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # checkout the repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts

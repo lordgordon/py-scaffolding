@@ -12,7 +12,7 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
   PYTHONHASHSEED=random \
   PYTHONUNBUFFERED=1 \
   LOCAL_USER=alice \
-  POETRY_VERSION=1.3.1
+  POETRY_VERSION=1.7.1
 ENV VENV_PATH="$PYSETUP_PATH/.venv"
 ENV PATH="$VENV_PATH/bin:$PATH"
 
@@ -43,7 +43,8 @@ RUN poetry install --no-dev
 COPY --chown=$LOCAL_USER:$LOCAL_USER py_scaffolding/ py_scaffolding/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
 COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
-RUN poetry build
+# RUN poetry build
+# Required only when building libraries
 
 # stage: production image
 FROM base AS production
@@ -52,7 +53,7 @@ ENTRYPOINT ["python", "-OO", "main.py"]
 
 # stage: vulnerability scanner on prod image
 FROM production AS vulnscan
-COPY --from=aquasec/trivy:0.35.0 /usr/local/bin/trivy /usr/local/bin/trivy
+COPY --from=aquasec/trivy:0.48.0 /usr/local/bin/trivy /usr/local/bin/trivy
 ENTRYPOINT ["trivy"]
 
 # stage: testing
