@@ -19,17 +19,17 @@ update: ## Just update the environment
 	@echo "\n${BLUE}Update poetry itself and check...${NC}\n"
 	pip3 install --upgrade poetry pre-commit
 	@${POETRY} check
-	@echo "\n${BLUE}Running poetry update...${NC}\n"
-	@${POETRY} run pip install --upgrade pip setuptools
 	@${POETRY} run python --version
+	@echo "\n${BLUE}Running poetry update...${NC}\n"
+	@${POETRY} update pip setuptools
 	@${POETRY} lock --no-update
 	@${POETRY} install
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	@${POETRY} run pip list -o --not-required --outdated
+	@${POETRY} show -o
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
 	pre-commit install
-	@${POETRY} run pip-audit --desc --ignore-vuln PYSEC-2022-42969
-# see https://github.com/pytest-dev/pytest/issues/10392
+	@echo "\n${BLUE}auditing Python packages...${NC}\n"
+	@${POETRY} run pip-audit --desc
 
 poetry-check: ## Verify Poetry lockfile status
 	@${POETRY} lock --check
@@ -49,7 +49,7 @@ lint-mypy: ## Just run mypy
 
 lint-base: poetry-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-# @${RUN_POETRY} bandit -r py_scaffolding
+	@${POETRY} run bandit -r py_scaffolding
 	@echo "\n${BLUE}Running pylint...${NC}\n"
 	@${POETRY} run pylint py_scaffolding tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
