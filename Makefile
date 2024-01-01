@@ -10,8 +10,8 @@ DOCKER_LOCAL_TAG=current-local
 RUN_DOCKER_BUILD := docker build --build-arg DOCKER_BASE_IMAGE=${DOCKER_BASE_IMAGE} --build-arg PYSETUP_PATH=${PYSETUP_PATH} -f Dockerfile
 RUN_TRIVY := docker run --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
-.PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check run-locally run-shell \
-				serve-coverage serve-doc test update vulnscan
+.PHONY: all autolint build build-for-tests clean doc help lint lint-base lint-mypy poetry-check pre-commit-all \
+				run-locally run-shell serve-coverage serve-doc test update vulnscan
 
 all: update lint test doc build-for-tests build vulnscan
 
@@ -27,7 +27,6 @@ update: ## Just update the environment
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
 	@${POETRY} run pip list -o --not-required --outdated
 	@echo "\n${BLUE}pre-commit hook install and run...${NC}\n"
-	cp -f pre-commit.sh .git/hooks/pre-commit
 	pre-commit install
 	@${POETRY} run pip-audit --desc --ignore-vuln PYSEC-2022-42969
 # see https://github.com/pytest-dev/pytest/issues/10392
@@ -41,6 +40,9 @@ autolint: ## Autolinting code
 	@${POETRY} run isort .
 	@${POETRY} run pyupgrade --py39-plus main.py $(shell find py_scaffolding -name "*.py") $(shell find tests -name "*.py")
 
+pre-commit-all:
+	pre-commit run --all-files
+
 lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	@${POETRY} run mypy py_scaffolding tests
@@ -53,7 +55,7 @@ lint-base: poetry-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running doc8...${NC}\n"
 	@${POETRY} run doc8 docs
 
-lint: autolint lint-base ## Autolint and code linting
+lint: autolint pre-commit-all lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
