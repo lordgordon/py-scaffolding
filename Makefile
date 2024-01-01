@@ -111,7 +111,7 @@ build: build-for-tests ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
 
 vulnscan: ## Execute Trivy scanner dockerized against this repo
-	## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
+## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
 	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
 	${RUN_TRIVY} version
 	${RUN_TRIVY} config --config trivy.yaml .

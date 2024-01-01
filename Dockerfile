@@ -1,5 +1,9 @@
 # stage: baseline
 ARG DOCKER_BASE_IMAGE
+ARG TRIVY_DOCKER_IMAGE="aquasec/trivy:0.48.1"
+
+FROM $TRIVY_DOCKER_IMAGE as trivy
+
 FROM $DOCKER_BASE_IMAGE AS base
 
 ARG PYSETUP_PATH
@@ -53,7 +57,7 @@ ENTRYPOINT ["python", "-OO", "main.py"]
 
 # stage: vulnerability scanner on prod image
 FROM production AS vulnscan
-COPY --from=aquasec/trivy:0.48.0 /usr/local/bin/trivy /usr/local/bin/trivy
+COPY --from=trivy /usr/local/bin/trivy /usr/local/bin/trivy
 ENTRYPOINT ["trivy"]
 
 # stage: testing

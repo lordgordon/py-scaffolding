@@ -15,6 +15,7 @@ scan:
   skip-dirs:
     - .venv
     - .git
+    - /usr/local/bin
   scanners:
     - vuln
     - misconfig
