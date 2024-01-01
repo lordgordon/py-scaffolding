@@ -7,7 +7,7 @@ license = "MIT License"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pydantic = "1.10.2"
+pydantic = "1.10.13"
 structlog = "22.3.0"
 
 [tool.poetry.dev-dependencies]
