@@ -25,7 +25,7 @@ structlog = "22.3.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "~1.7"
-black = "~23"
+black = "~24"
 commitizen = "~3"
 coverage = {extras = ["toml"], version = "~7"}
 doc8 = "~1.1"
