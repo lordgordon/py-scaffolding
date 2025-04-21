@@ -1,46 +1,64 @@
 [build-system]
-requires = ["poetry-core>=1.1.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "py-scaffolding"
 version = "0.0.1"
-description = "Empty project"
-license = "MIT License"
-authors = [
-  "Nicholas Fiorentini <lordgordon@users.noreply.github.com>",
+dependencies = [
+    "pydantic~=1.10",
+    "structlog~=22.3",
 ]
-homepage = "https://github.com/lordgordon/py-scaffolding"
-# keywords = ["packaging", "poetry"]
-# classifiers = [
-#     "Topic :: Software Development :: Build Tools",
-#     "Topic :: Software Development :: Libraries :: Python Modules"
-# see https://pypi.org/classifiers/
-# ]
+requires-python = "~=3.11,<3.12"
+authors = [
+  { name = "Nicholas Fiorentini", email = "lordgordon@users.noreply.github.com" },
+]
+# maintainers = []
+description = "Empty project"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["scaffolding-repo"]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 5 - Production/Stable",
 
-[tool.poetry.dependencies]
-python = "^3.11"
-pydantic = "1.10.13"
-structlog = "22.3.0"
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "Typing :: Typed",
 
-[tool.poetry.dev-dependencies]
-bandit = "~1.7"
-black = "~23"
-commitizen = "~3"
-coverage = {extras = ["toml"], version = "~7"}
-doc8 = "~1.1"
-Faker = "~22"
-hypothesis = "~6"
-ipdb = "~0.13"
-ipython = "~8"
-isort = "~5"
-mypy = "1.8.0"
-Sphinx = "~7"
-pip-audit = "~2.6"
-pylint = "~3"
-pytest = "~7"
-pytest-bdd = "~7"
-pyupgrade = "~3.15"
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3.11",
+]
+
+[dependency-groups]
+dev = [
+    "bandit~=1.7",
+    "black~=23.0",
+    "commitizen~=3.0",
+    "coverage[toml]~=7.0",
+    "doc8~=1.1",
+    "Faker~=22.0",
+    "hypothesis~=6.0",
+    "ipdb~=0.13",
+    "ipython~=8.0",
+    "isort~=5.0",
+    "mypy~=1.8",
+    "pip-audit~=2.6",
+    "pre-commit~=4.2",
+    "pylint~=3.0",
+    "pytest-bdd~=7.0",
+    "pytest~=7.0",
+    "pyupgrade~=3.15",
+    "Sphinx~=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lordgordon/py-scaffolding"
 
 [tool.black]
 line-length = 90

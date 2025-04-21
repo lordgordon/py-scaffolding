@@ -134,3 +134,4 @@ dmypy.json
 
 # This Project
 .trivy-cache
+*.ignore
