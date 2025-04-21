@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Set release tag
         run: |
-          TAG="py-311.$(date '+%Y%m%d')"
+          TAG="py-313.$(date '+%Y%m%d')"
           echo "$TAG"
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
       - name: Git tag and release
