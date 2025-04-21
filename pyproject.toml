@@ -179,29 +179,3 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["S101"]
-
-# ## ${UV} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
-
-# [tool.isort]
-# profile = "black"
-# multi_line_output = 3
-# include_trailing_comma = true
-# force_grid_wrap = 0
-# use_parentheses = true
-# line_length = 90
-# atomic = true
-
-# [tool.pylint.messages_control]
-# disable = ''',
-#     invalid-name,
-#     too-many-arguments,
-#     too-many-instance-attributes,
-#     too-many-ancestors,
-#     too-few-public-methods,
-#     '''
-
-# [tool.pylint.options]
-# ignored-argument-names = "_.*|^ignored_|^unused_|args|kwargs"
-# min-public-methods = "1"
-# min-similarity-lines = "6"
-# max-line-length = "120"
