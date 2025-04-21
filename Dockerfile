@@ -1,5 +1,5 @@
 # stage: baseline
-ARG DOCKER_BASE_IMAGE="python:3.11.12-slim-bullseye"
+ARG DOCKER_BASE_IMAGE="python:3.13.3-slim-bullseye"
 ARG TRIVY_DOCKER_IMAGE="aquasec/trivy:0.61.1"
 
 FROM $TRIVY_DOCKER_IMAGE AS trivy
