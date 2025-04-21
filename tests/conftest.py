@@ -3,7 +3,7 @@
 
 import json
 import logging
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from io import StringIO
 
 import pytest
@@ -14,10 +14,10 @@ class JSONLogIO(StringIO):
 
     def __init__(self, initial_value: str | None = None, newline: str | None = None):
         super().__init__(initial_value=initial_value, newline=newline)
-        self._entries: list[dict] = []
+        self._entries: Sequence[dict] = []
 
     @property
-    def entries(self) -> list[dict]:
+    def entries(self) -> Sequence[dict]:
         # build _entries only once
         if not self._entries:
             self._entries = [json.loads(line) for line in self.getvalue().splitlines()]

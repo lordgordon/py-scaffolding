@@ -10,7 +10,9 @@ import structlog
 
 
 def set_up_logger(
-    *, logger_name: str, log_level: int = logging.INFO
+    *,
+    logger_name: str,
+    log_level: int = logging.INFO,
 ) -> structlog.stdlib.BoundLogger:  # pragma: no cover
     """
     Set up the logger object to use in your code.
@@ -38,7 +40,9 @@ def set_up_logger(
 
 
 def set_logger_level(
-    *, logger: structlog.stdlib.BoundLogger, level: str
+    *,
+    logger: structlog.stdlib.BoundLogger,
+    level: str,
 ) -> None:  # pragma: no cover
     """
     Allow to set a new logging level by name for an existing logger.
