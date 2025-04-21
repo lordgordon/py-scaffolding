@@ -10,16 +10,18 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 
 .PHONY: \
 	all \
-	autolint \
 	build \
 	build-for-tests \
+	check \
+	check-code \
+	check-fix \
+	check-pre-commit \
+	check-types \
+	check-uv \
 	clean \
 	doc \
 	help \
-	lint \
-	lint-base \
-	lint-mypy \
-	pre-commit-all \
+	install \
 	run \
 	run-locally \
 	run-shell-prod \
@@ -27,13 +29,11 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	serve-coverage \
 	serve-doc \
 	test \
-	update \
-	uv-check \
 	vulnscan
 
-all: lint test doc build-for-tests build vulnscan
+all: check-fix check test doc build vulnscan
 
-update: ## Just update the environment
+install: ## Install the environment
 	@echo "\n${BLUE}Running uv lock...${NC}\n"
 	${UV} run python --version
 	${UV} lock --no-upgrade
@@ -45,31 +45,27 @@ update: ## Just update the environment
 	@echo "\n${BLUE}auditing Python packages...${NC}\n"
 	${UV} run pip-audit --desc
 
-uv-check: ## Verify uv lockfile status
+check-uv: ## Verify lockfile status
 	${UV} lock --check
 
-autolint: ## Autolinting code
-	@echo "\n${BLUE}Running autolinting...${NC}\n"
-	${UV} run black .
-	${UV} run isort .
-	${UV} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
+check-fix: ## Auto fix the code issues and format code
+	${UV} run ruff check --select I --fix
+	${UV} run ruff format
 
-pre-commit-all:
+check-code: ## Find code issues
+	${UV} run ruff check
+	${UV} run ruff format --preview
+
+check-pre-commit: ## Run pre-commit against all files
 	${UV} run pre-commit run --all-files
 
-lint-mypy: ## Just run mypy
+check-types: ## Just check the types with mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
 	${UV} run mypy src tests
 
-lint-base: uv-check lint-mypy ## Just run the linters without autolinting
+check: check-uv check-types check-code ## Run all code checks without fixing the code
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	${UV} run bandit -r src
-	@echo "\n${BLUE}Running pylint...${NC}\n"
-	${UV} run pylint src tests
-	@echo "\n${BLUE}Running doc8...${NC}\n"
 	${UV} run python -m doc8 docs
-
-lint: autolint pre-commit-all lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
