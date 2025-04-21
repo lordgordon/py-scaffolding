@@ -12,7 +12,6 @@ on:
 
 env:
   # keep this aligned with Makefile and all workflows
-  DOCKER_BASE_IMAGE: python:3.11.12-slim-bullseye
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
   GITHUB_ARTIFACTS_PATH: artifacts
@@ -46,9 +45,6 @@ jobs:
           tags: ${{env.IMAGE_NAME}}-testing:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
           target: testing
-          build-args: |
-            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
-            PYSETUP_PATH=/app
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -60,9 +56,6 @@ jobs:
           tags: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
           target: production
-          build-args: |
-            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
-            PYSETUP_PATH=/app
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -74,9 +67,6 @@ jobs:
           tags: ${{env.IMAGE_NAME}}-migrations:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
           target: migrations
-          build-args: |
-            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
-            PYSETUP_PATH=/app
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -153,9 +143,6 @@ jobs:
             ${{env.DOCKER_HUB_REPOSITORY}}/${{env.IMAGE_NAME}}:main
             ${{env.DOCKER_HUB_REPOSITORY}}/${{env.IMAGE_NAME}}:${{github.sha}}
           target: production
-          build-args: |
-            DOCKER_BASE_IMAGE=${{env.DOCKER_BASE_IMAGE}}
-            PYSETUP_PATH=/app
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
 

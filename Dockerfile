@@ -1,12 +1,12 @@
 # stage: baseline
-ARG DOCKER_BASE_IMAGE
+ARG DOCKER_BASE_IMAGE="python:3.11.12-slim-bullseye"
 ARG TRIVY_DOCKER_IMAGE="aquasec/trivy:0.61.1"
 
-FROM $TRIVY_DOCKER_IMAGE as trivy
+FROM $TRIVY_DOCKER_IMAGE AS trivy
 
 FROM $DOCKER_BASE_IMAGE AS base
 
-ARG PYSETUP_PATH
+ARG PYSETUP_PATH="/app"
 ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
@@ -73,7 +73,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/
 COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 
 # stage: migrations
-FROM base as migrations
+FROM base AS migrations
 COPY --from=builder --chown=$LOCAL_USER:$LOCAL_USER $PYSETUP_PATH $PYSETUP_PATH
 
 USER root
