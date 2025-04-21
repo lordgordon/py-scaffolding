@@ -10,7 +10,7 @@ git checkout -b 00-my-work
 
 Before submitting your PR, make sure to have
 run all linting and test. To be sure,
-just run `make` and check there are no errors and no files left. Commit all new `poetry` updates.
+just run `make` and check there are no errors and no files left. Commit all new `uv` updates.
 
 ```
 git push --set-upstream origin 00-my-work
