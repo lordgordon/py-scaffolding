@@ -44,6 +44,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml uv.lock ./
 COPY --chown=$LOCAL_USER:$LOCAL_USER src/ src/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
 COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
+COPY --chown=$LOCAL_USER:$LOCAL_USER README.md .
 
 RUN uv sync --no-dev --inexact --no-editable
 
