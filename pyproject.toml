@@ -68,7 +68,6 @@ target-version = ["py311"]
 branch = true
 omit=[
     "*/__main__.py",
-    "*/tests/*",
     "*/docs/*",
     "*/virtualenvs/*",
     "*/venv/*"]

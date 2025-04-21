@@ -35,67 +35,67 @@ all: lint test doc build-for-tests build vulnscan
 
 update: ## Just update the environment
 	@echo "\n${BLUE}Running uv lock...${NC}\n"
-	@${UV} run python --version
-	@${UV} lock --no-upgrade
-	@${UV} sync
+	${UV} run python --version
+	${UV} lock --no-upgrade
+	${UV} sync
 	@echo "\n${BLUE}Install the pre-commit script...${NC}\n"
-	@${UV} run pre-commit install
+	${UV} run pre-commit install
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	@${UV} pip list --outdated
+	${UV} pip list --outdated
 	@echo "\n${BLUE}auditing Python packages...${NC}\n"
-	@${UV} run pip-audit --desc
+	${UV} run pip-audit --desc
 
 uv-check: ## Verify uv lockfile status
-	@${UV} lock --check
+	${UV} lock --check
 
 autolint: ## Autolinting code
 	@echo "\n${BLUE}Running autolinting...${NC}\n"
-	@${UV} run black .
-	@${UV} run isort .
-	@${UV} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
+	${UV} run black .
+	${UV} run isort .
+	${UV} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
 
 pre-commit-all:
-	@${UV} run pre-commit run --all-files
+	${UV} run pre-commit run --all-files
 
 lint-mypy: ## Just run mypy
 	@echo "\n${BLUE}Running mypy...${NC}\n"
-	@${UV} run mypy src tests
+	${UV} run mypy src tests
 
 lint-base: uv-check lint-mypy ## Just run the linters without autolinting
 	@echo "\n${BLUE}Running bandit...${NC}\n"
-	@${UV} run bandit -r src
+	${UV} run bandit -r src
 	@echo "\n${BLUE}Running pylint...${NC}\n"
-	@${UV} run pylint src tests
+	${UV} run pylint src tests
 	@echo "\n${BLUE}Running doc8...${NC}\n"
-	@${UV} run python -m doc8 docs
+	${UV} run python -m doc8 docs
 
 lint: autolint pre-commit-all lint-base ## Autolint and code linting
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
-	@${UV} run coverage erase;
-	@${UV} run python -Im coverage \
+	${UV} run coverage erase;
+	${UV} run python -Im coverage \
 		run -m pytest \
 		--junitxml=junit/test-results.xml \
 		--hypothesis-show-statistics \
 		--doctest-modules
-	@${UV} run coverage report
-	@${UV} run coverage html
-	@${UV} run coverage xml
+	${UV} run coverage report
+	${UV} run coverage html
+	${UV} run coverage xml
 
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "htmlcov"; ${UV} run python -OO -m http.server
+	cd "htmlcov"; ${UV} run python -OO -m http.server
 
 doc: ## Compile and update the internal documentation
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
-	@cd docs; make html
+	cd docs; make html
 
 serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/index.html \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	@cd "docs/_build/html"; ${UV} run python -OO -m http.server
+	cd "docs/_build/html"; ${UV} run python -OO -m http.server
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
@@ -111,7 +111,7 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	-docker image rm ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} --force
 
 run-locally: ## Execute the main entry point locally (with uv)
-	@${UV} run python -I -OO main.py
+	${UV} run python -I -OO main.py
 
 build-for-tests: ## Build Docker image with testing tools
 	${RUN_DOCKER_BUILD} --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} .
