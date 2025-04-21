@@ -38,8 +38,6 @@ classifiers = [
 
 [dependency-groups]
 dev = [
-    "bandit~=1.8",
-    "black~=25.0",
     "commitizen~=4.6",
     "coverage[toml]~=7.8",
     "doc8~=1.1",
@@ -47,24 +45,31 @@ dev = [
     "hypothesis~=6.131",
     "ipdb~=0.13",
     "ipython~=9.0",
-    "isort~=6.0",
     "mypy~=1.15",
     "pip-audit~=2.9",
     "pip~=25.0",
     "pre-commit~=4.2",
-    "pylint~=3.3",
     "pytest-bdd~=8.1",
     "pytest~=8.3",
-    "pyupgrade~=3.19",
+    "ruff>=0.11.6",
     "Sphinx~=8.2",
 ]
 
 [project.urls]
 Homepage = "https://github.com/lordgordon/py-scaffolding"
 
-[tool.black]
-line-length = 90
-target-version = ["py311"]
+[tool.commitizen]
+version = "0.0.1"
+version_files = [
+    "src/py_scaffolding/__version__.py",
+    "pyproject.toml:version"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.2"
+python_files = "tests.py test_*.py *_tests.py"
+norecursedirs = ".* *.egg venv"
+junit_family = "xunit2"
 
 [tool.coverage.run]
 branch = true
@@ -82,43 +87,6 @@ show_missing = true
 skip_covered = false
 sort = "Cover"
 fail_under = 99
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 90
-atomic = true
-
-[tool.pytest.ini_options]
-minversion = "6.2"
-python_files = "tests.py test_*.py *_tests.py"
-norecursedirs = ".* *.egg venv"
-junit_family = "xunit2"
-
-[tool.pylint.messages_control]
-disable = ''',
-    invalid-name,
-    too-many-arguments,
-    too-many-instance-attributes,
-    too-many-ancestors,
-    too-few-public-methods,
-    '''
-
-[tool.pylint.options]
-ignored-argument-names = "_.*|^ignored_|^unused_|args|kwargs"
-min-public-methods = "1"
-min-similarity-lines = "6"
-max-line-length = "120"
-
-[tool.commitizen]
-version = "0.0.1"
-version_files = [
-    "src/py_scaffolding/__version__.py",
-    "pyproject.toml:version"
-]
 
 [tool.mypy]
 python_version = "3.11"
@@ -153,3 +121,87 @@ init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+exclude = [".venv", "docs"]
+
+[tool.ruff.analyze]
+detect-string-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    "RUF",
+    # Pylint
+    "PL",
+    # pyupgrade
+    "UP",
+    # isort
+    "I",
+    # code complexity
+    "C90",
+    # specific languages
+    "NPY",
+    "PD",
+    # naming conventions
+    "N",
+    # various flake8 rules
+    "A",
+    "ANN",
+    "ARG",
+    "ASYNC",
+    "B",
+    "C4",
+    "DTZ",
+    "FBT",
+    "G",
+    "ICN",
+    "LOG",
+    "PIE",
+    "PT",
+    "PTH",
+    "Q",
+    "RET",
+    "S",
+    "SIM",
+    "SIM",
+    "T20",
+    "TC",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["S101"]
+
+# ## ${UV} run pyupgrade --py311-plus main.py $(shell find src -name "*.py") $(shell find tests -name "*.py")
+
+# [tool.isort]
+# profile = "black"
+# multi_line_output = 3
+# include_trailing_comma = true
+# force_grid_wrap = 0
+# use_parentheses = true
+# line_length = 90
+# atomic = true
+
+# [tool.pylint.messages_control]
+# disable = ''',
+#     invalid-name,
+#     too-many-arguments,
+#     too-many-instance-attributes,
+#     too-many-ancestors,
+#     too-few-public-methods,
+#     '''
+
+# [tool.pylint.options]
+# ignored-argument-names = "_.*|^ignored_|^unused_|args|kwargs"
+# min-public-methods = "1"
+# min-similarity-lines = "6"
+# max-line-length = "120"
