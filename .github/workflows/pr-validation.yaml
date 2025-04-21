@@ -125,7 +125,7 @@ jobs:
           docker image ls
       # run tests
       - name: Linters
-        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make lint-base
+        run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make check
       - name: Unit tests
         run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make test
         # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
