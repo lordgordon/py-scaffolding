@@ -26,6 +26,8 @@ jobs:
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - run: ls -lsa
       # build images
       - name: Set up Docker Buildx
@@ -107,6 +109,8 @@ jobs:
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts
@@ -153,6 +157,8 @@ jobs:
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       # restore docker images
       - run: mkdir -p ${GITHUB_ARTIFACTS_PATH}
       - name: Download artifacts
