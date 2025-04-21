@@ -21,6 +21,7 @@ def set_up_logger(
         :caption: Minimal example
 
         from py_scaffolding.logging import set_up_logger
+
         LOG = set_up_logger(logger_name=__name__)
 
         # ... later in the code ...
@@ -32,7 +33,7 @@ def set_up_logger(
     """
     # pylint: disable=protected-access
     _set_up_structlog()
-    logger = cast(structlog.stdlib.BoundLogger, structlog.get_logger(logger_name))
+    logger = cast("structlog.stdlib.BoundLogger", structlog.get_logger(logger_name))
     logger.setLevel(log_level)
     if not logger.new()._logger.handlers:
         logger.addHandler(_configure_logger_handlers())
@@ -59,15 +60,12 @@ def set_logger_level(
     clean_level = level.upper()
     numeric_level = getattr(logging, clean_level)
     logger.setLevel(numeric_level)
-    logger.info(
-        "Log level changed", new_level=clean_level, new_level_numeric=numeric_level
-    )
+    logger.info("Log level changed", new_level=clean_level, new_level_numeric=numeric_level)
 
 
 def _configure_logger_handlers() -> logging.StreamHandler:  # pragma: no cover
     """Internal helper to add handlers."""
-    logger_handler = logging.StreamHandler(sys.stdout)
-    return logger_handler
+    return logging.StreamHandler(sys.stdout)
 
 
 def _set_up_structlog() -> None:  # pragma: no cover

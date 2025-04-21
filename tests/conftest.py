@@ -13,7 +13,7 @@ import pytest
 class JSONLogIO(StringIO):
     """Helper to capture logs and convert the raw JSON string into a proper dict."""
 
-    def __init__(self, initial_value: str | None = None, newline: str | None = None):
+    def __init__(self, initial_value: str | None = None, newline: str | None = None) -> None:
         super().__init__(initial_value=initial_value, newline=newline)
         self._entries: Sequence[dict] = []
 
@@ -26,7 +26,7 @@ class JSONLogIO(StringIO):
         return self._entries
 
 
-@pytest.fixture()
+@pytest.fixture
 def log_capture() -> Iterator[JSONLogIO]:
     """To capture our custom logger based on structlog."""
     logger = logging.getLogger()

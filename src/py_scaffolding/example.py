@@ -35,4 +35,4 @@ def example() -> None:  # pragma: no cover
     set_logger_level(logger=LOG, level=settings.LOG_LEVEL)
 
     demo_with_logger()
-    print(demo())
+    print(demo())  # noqa: T201
