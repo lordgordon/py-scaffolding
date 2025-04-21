@@ -152,6 +152,8 @@ select = [
     "PD",
     # naming conventions
     "N",
+    # documentation
+    "D",
     # various flake8 rules
     "A",
     "ANN",
@@ -175,6 +177,11 @@ select = [
     "T20",
     "TC",
 ]
+ignore = [
+  "D203",
+  "D212",
+  "D401",
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*.py" = ["S101"]
+"tests/*.py" = ["S101", "D"]

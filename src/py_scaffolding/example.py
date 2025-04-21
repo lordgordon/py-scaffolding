@@ -19,9 +19,7 @@ def demo() -> int:  # pragma: no cover
 
 
 def demo_with_logger() -> None:  # pragma: no cover
-    """
-    To test and demonstrate the use of logger.
-    """
+    """To test and demonstrate the use of logger."""
     LOG.info(
         "test log message",
         some_key="some value",

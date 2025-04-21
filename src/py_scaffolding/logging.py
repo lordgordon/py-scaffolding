@@ -1,6 +1,4 @@
-"""
-Configure the logger with a structured JSON log format.
-"""
+"""Configure the logger with a structured JSON log format."""
 
 import logging
 import sys
