@@ -6,7 +6,7 @@ authors = [
   { name = "Nicholas Fiorentini", email = "lordgordon@users.noreply.github.com" },
 ]
 # license = "MIT License"
-requires-python = "~=3.11"
+requires-python = "~=3.11,<3.12"
 dependencies = [
     "pydantic~=1.10",
     "structlog~=22.3",
