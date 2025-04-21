@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "py-scaffolding"
 version = "0.0.1"
 dependencies = [
+    "pydantic-settings~=2.9",
     "pydantic~=2.11",
     "structlog~=22.3",
 ]
@@ -49,13 +50,13 @@ dev = [
     "isort~=6.0",
     "mypy~=1.15",
     "pip-audit~=2.9",
+    "pip~=25.0",
     "pre-commit~=4.2",
     "pylint~=3.3",
     "pytest-bdd~=8.1",
     "pytest~=8.3",
     "pyupgrade~=3.19",
     "Sphinx~=8.2",
-    "pip~=25.0",
 ]
 
 [project.urls]

@@ -1,4 +1,5 @@
 """An example to show everything is working."""
+
 from py_scaffolding.logging import set_logger_level, set_up_logger
 from py_scaffolding.settings import Settings
 
