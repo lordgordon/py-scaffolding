@@ -1,4 +1,5 @@
 """Common PyTest setup."""
+
 # pylint: disable=missing-function-docstring
 
 import json
