@@ -1,6 +1,6 @@
 # stage: baseline
 ARG DOCKER_BASE_IMAGE
-ARG TRIVY_DOCKER_IMAGE="aquasec/trivy:0.48.1"
+ARG TRIVY_DOCKER_IMAGE="aquasec/trivy:0.61.1"
 
 FROM $TRIVY_DOCKER_IMAGE as trivy
 
@@ -10,15 +10,14 @@ ARG PYSETUP_PATH
 ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
-  POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_IN_PROJECT=true \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
   PYTHONUNBUFFERED=1 \
-  LOCAL_USER=alice \
-  POETRY_VERSION=1.7.1
-ENV VENV_PATH="$PYSETUP_PATH/.venv"
-ENV PATH="$VENV_PATH/bin:$PATH"
+  UV_FROZEN=1 \
+  UV_PYTHON_PREFERENCE="system" \
+  LOCAL_USER=alice
+ENV VIRTUAL_ENV="$PYSETUP_PATH/.venv"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # create non root user
 RUN mkdir $PYSETUP_PATH && \
@@ -35,19 +34,18 @@ USER $LOCAL_USER
 ENTRYPOINT []
 CMD []
 
-# stage: builder (creates the .venv from poetry)
+# stage: builder (creates the .venv from uv)
 FROM base AS builder
 USER root
-RUN pip install -U pip "poetry==$POETRY_VERSION"
+COPY --from=ghcr.io/astral-sh/uv:0.6.14 /uv /uvx /bin/
+
 USER $LOCAL_USER
-
-COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml poetry.lock poetry.toml ./
-RUN poetry install --no-root --only main
-
+COPY --chown=$LOCAL_USER:$LOCAL_USER pyproject.toml uv.lock ./
 COPY --chown=$LOCAL_USER:$LOCAL_USER src/ src/
 COPY --chown=$LOCAL_USER:$LOCAL_USER main.py .
 COPY --chown=$LOCAL_USER:$LOCAL_USER LICENSE .
-RUN poetry install --only-root
+
+RUN uv sync --no-dev --inexact --no-editable
 
 # stage: production image
 FROM base AS production
@@ -61,14 +59,14 @@ ENTRYPOINT ["trivy"]
 
 # stage: testing
 FROM base AS testing
-COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
-
 USER root
+COPY --from=builder /bin/uv /bin/uvx /bin/
+COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
-RUN pip install -U pip "poetry==$POETRY_VERSION"
-RUN poetry install && \
-    chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
+
 USER $LOCAL_USER
+RUN uv sync --inexact --no-editable && \
+    chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
 
 COPY --chown=$LOCAL_USER:$LOCAL_USER docs/ docs/
 COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/

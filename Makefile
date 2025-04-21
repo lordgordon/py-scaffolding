@@ -119,7 +119,7 @@ run: build ## Execute the main entry point in the Docker image
 	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
 
 run-shell: build ## Open a shell in the Docker image
-	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
+	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG}
 
 build-for-tests: ## Build Docker image with testing tools
 	docker pull ${DOCKER_BASE_IMAGE}

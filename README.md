@@ -56,7 +56,7 @@ or, to execute the main entry point from Docker:
 make run
 ```
 
-or, to open a shell in the Docker image:
+or, to open a shell in the Docker image (test build):
 ```shell
 make run-shell
 ```
@@ -93,5 +93,5 @@ docker run --platform linux/amd64 --rm -it py-scaffolding:current-local
 | `make clean`       | Force a clean environment: remove all temporary files and caches. Start from a new environment. This command allow to start over from a fresh state. |
 | `make build`       | Build the Docker image.                                                                                                                              |
 | `make run`         | Execute the main entry point from Docker.                                                                                                            |
-| `make run-locally` | Execute the main entry point locally (with uv).                                                                                                  |
-| `make run-shell`   | Open a shell in the Docker image.                                                                                                                    |
+| `make run-locally` | Execute the main entry point locally (with uv).                                                                                                      |
+| `make run-shell`   | Open a shell in the Docker image (test build                                                                                                         |
