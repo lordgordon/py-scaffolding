@@ -24,7 +24,8 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	pre-commit-all \
 	run \
 	run-locally \
-	run-shell \
+	run-shell-prod \
+	run-shell-testing \
 	serve-coverage \
 	serve-doc \
 	test \
@@ -115,12 +116,6 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 run-locally: ## Execute the main entry point locally (with uv)
 	@${UV} run python -I -OO main.py
 
-run: build ## Execute the main entry point in the Docker image
-	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
-
-run-shell: build ## Open a shell in the Docker image
-	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG}
-
 build-for-tests: ## Build Docker image with testing tools
 	docker pull ${DOCKER_BASE_IMAGE}
 	${RUN_DOCKER_BUILD} --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} .
@@ -128,6 +123,15 @@ build-for-tests: ## Build Docker image with testing tools
 build: build-for-tests ## Build Docker image for production
 	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
+
+run: build ## Execute the main entry point in the Docker image
+	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
+
+run-shell-testing: build-for-tests ## Open a shell in the testing Docker image
+	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG}
+
+run-shell-prod: build ## Open a shell in the production Docker image
+	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
 
 vulnscan: ## Execute Trivy scanner dockerized against this repo
 ## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
