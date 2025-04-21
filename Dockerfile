@@ -61,12 +61,11 @@ ENTRYPOINT ["trivy"]
 FROM base AS testing
 USER root
 COPY --from=builder /bin/uv /bin/uvx /bin/
-COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
+COPY --from=builder --chown=$LOCAL_USER:$LOCAL_USER $PYSETUP_PATH $PYSETUP_PATH
 RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
 
 USER $LOCAL_USER
-RUN uv sync --inexact --no-editable && \
-    chown -R $LOCAL_USER:$LOCAL_USER $PYSETUP_PATH
+RUN uv sync --inexact --no-editable
 
 COPY --chown=$LOCAL_USER:$LOCAL_USER docs/ docs/
 COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/
@@ -74,7 +73,7 @@ COPY --chown=$LOCAL_USER:$LOCAL_USER Makefile .
 
 # stage: migrations
 FROM base as migrations
-COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
+COPY --from=builder --chown=$LOCAL_USER:$LOCAL_USER $PYSETUP_PATH $PYSETUP_PATH
 
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
