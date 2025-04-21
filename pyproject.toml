@@ -8,8 +8,8 @@ authors = [
 # license = "MIT License"
 requires-python = "~=3.11"
 dependencies = [
-    "pydantic==1.10.13",
-    "structlog==22.3.0",
+    "pydantic~=1.10",
+    "structlog~=22.3",
 ]
 
 [project.urls]
@@ -17,23 +17,24 @@ Homepage = "https://github.com/lordgordon/py-scaffolding"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.7,<1.8",
-    "black>=23,<24",
-    "commitizen>=3,<4",
-    "coverage[toml]>=7,<8",
-    "doc8>=1.1,<1.2",
-    "Faker>=22,<23",
-    "hypothesis>=6,<7",
-    "ipdb>=0.13,<0.14",
-    "ipython>=8,<9",
-    "isort>=5,<6",
-    "mypy==1.8.0",
-    "pip-audit>=2.6,<2.7",
-    "pylint>=3,<4",
-    "pytest-bdd>=7,<8",
-    "pytest>=7,<8",
-    "pyupgrade>=3.15,<3.16",
-    "Sphinx>=7,<8",
+    "bandit~=1.7",
+    "black~=23.0",
+    "commitizen~=3.0",
+    "coverage[toml]~=7.0",
+    "doc8~=1.1",
+    "Faker~=22.0",
+    "hypothesis~=6.0",
+    "ipdb~=0.13",
+    "ipython~=8.0",
+    "isort~=5.0",
+    "mypy~=1.8",
+    "pip-audit~=2.6",
+    "pre-commit~=4.2",
+    "pylint~=3.0",
+    "pytest-bdd~=7.0",
+    "pytest~=7.0",
+    "pyupgrade~=3.15",
+    "Sphinx~=7.0",
 ]
 
 [build-system]
