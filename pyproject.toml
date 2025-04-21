@@ -10,7 +10,7 @@ dependencies = [
     "pydantic~=2.11",
     "structlog~=22.3",
 ]
-requires-python = "~=3.11,<3.12"
+requires-python = "~=3.13,<3.14"
 authors = [
   { name = "Nicholas Fiorentini", email = "lordgordon@users.noreply.github.com" },
 ]
@@ -33,7 +33,7 @@ classifiers = [
   "Typing :: Typed",
 
   # Specify the Python versions you support here.
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.13",
 ]
 
 [dependency-groups]
@@ -88,7 +88,7 @@ sort = "Cover"
 fail_under = 99
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 plugins = ["pydantic.mypy"]
 
 enable_error_code = [
