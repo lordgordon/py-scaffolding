@@ -12,7 +12,7 @@ on:
 
 env:
   # keep this aligned with Makefile and all workflows
-  DOCKER_BASE_IMAGE: python:3.11.7-slim-bullseye
+  DOCKER_BASE_IMAGE: python:3.11.12-slim-bullseye
   IMAGE_NAME: py-scaffolding
   IMAGE_LOCAL_TAG: current-local
   GITHUB_ARTIFACTS_PATH: artifacts
@@ -21,7 +21,7 @@ env:
 jobs:
   build-images:
     name: Build images
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
     # Don't run the pipeline when the commit message includes skip-ci
     steps:
@@ -31,9 +31,9 @@ jobs:
       # build images
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{runner.os}}-buildx-${{github.sha}}
@@ -41,7 +41,7 @@ jobs:
             ${{runner.os}}-buildx-
       - name: Build test image
         id: build_test
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           tags: ${{env.IMAGE_NAME}}-testing:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
@@ -55,7 +55,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       - name: Build production image
         id: build_production
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           tags: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
@@ -69,7 +69,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       - name: Build migrations image
         id: build_migrations
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           tags: ${{env.IMAGE_NAME}}-migrations:${{env.IMAGE_LOCAL_TAG}}
           builder: ${{steps.buildx.outputs.name}}
@@ -113,7 +113,7 @@ jobs:
   run-tests:
     name: Run tests
     needs: build-images
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
         run: docker run --rm ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG} make doc
       # publish image to Docker Hub on success
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         if: github.ref == 'refs/heads/main'
         with:
           username: ${{secrets.DOCKER_HUB_USERNAME}}
@@ -147,7 +147,7 @@ jobs:
       - name: Publish production image to Docker Hub
         id: publish_production
         if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           tags: |
             ${{env.DOCKER_HUB_REPOSITORY}}/${{env.IMAGE_NAME}}:main
@@ -162,7 +162,7 @@ jobs:
   check-vulnerabilities:
     name: Check vulnerabilities
     needs: build-images
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
@@ -183,7 +183,7 @@ jobs:
         run: |
           touch trivy-config-results.sarif trivy-fs-results.sarif trivy-image-results.sarif
       - name: Check config
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: "config"
           format: "sarif"
@@ -191,13 +191,13 @@ jobs:
           exit-code: "1"
           output: "trivy-config-results.sarif"
       - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: "trivy-config-results.sarif"
           category: trivy-fs
       - name: Check repository
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: "fs"
           format: "sarif"
@@ -205,13 +205,13 @@ jobs:
           exit-code: "1"
           output: "trivy-fs-results.sarif"
       - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: "trivy-fs-results.sarif"
           category: trivy-config
       - name: Check production image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{env.IMAGE_NAME}}:${{env.IMAGE_LOCAL_TAG}}
           format: "sarif"
@@ -219,7 +219,7 @@ jobs:
           exit-code: "1"
           output: "trivy-image-results.sarif"
       - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: "trivy-image-results.sarif"
