@@ -40,8 +40,7 @@ uv run cz bump --increment MINOR -ch --dry-run
 uv run cz bump --increment MAJOR -ch --dry-run
 ```
 
-If OK, run again without `--dry-run`. For full details see
-https://commitizen-tools.github.io/commitizen/bump/
+If OK, run again without `--dry-run`. For full details see https://commitizen-tools.github.io/commitizen/bump/.
 
 ## Commands
 
@@ -57,7 +56,7 @@ Then, to execute the main entry point with the local Python environment:
 make run-locally
 ```
 
-or, to execute the main entry point from Docker:
+or, to execute the main entry point from Docker using the production image:
 
 ```shell
 make run
@@ -67,20 +66,6 @@ or, to open a shell in the testing Docker image:
 
 ```shell
 make run-shell-testing
-```
-
-### Run the production image
-
-To run the main entry point with the production image, first build the production image:
-
-```shell
-make build
-```
-
-Then:
-
-```shell
-docker run --platform linux/amd64 --rm -it py-scaffolding:current-local
 ```
 
 ### Makefile commands
