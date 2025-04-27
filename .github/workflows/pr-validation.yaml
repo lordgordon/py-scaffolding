@@ -154,6 +154,9 @@ jobs:
     name: Check vulnerabilities
     needs: build-images
     runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      security-events: write
     steps:
       # checkout the repo
       - uses: actions/checkout@v4
