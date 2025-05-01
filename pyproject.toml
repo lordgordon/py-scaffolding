@@ -61,7 +61,7 @@ Homepage = "https://github.com/lordgordon/py-scaffolding"
 version = "0.0.1"
 version_files = [
     "src/py_scaffolding/__version__.py",
-    "pyproject.toml:version"
+    "pyproject.toml:version",
 ]
 
 [tool.pytest.ini_options]
