@@ -145,13 +145,16 @@ vulnscan: ## Execute Trivy scanner dockerized against this repo
 	${RUN_TRIVY} rootfs --config trivy.yaml /
 
 bump-patch: ## bump the project's version with a PATCH
-	${UV} run cz bump --increment PATCH --changelog
+	${UV} run cz bump --files-only --local-version --increment PATCH
+	${UV} lock --no-upgrade
 
 bump-minor: ## bump the project's version with a MINOR
-	${UV} run cz bump --increment MINOR --changelog
+	${UV} run cz bump --files-only --local-version --increment MINOR
+	${UV} lock --no-upgrade
 
 bump-major: ## bump the project's version with a MAJOR
-	${UV} run cz bump --increment MAJOR --changelog
+	${UV} run cz bump --files-only --local-version --increment MAJOR
+	${UV} lock --no-upgrade
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"

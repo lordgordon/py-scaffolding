@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "py-scaffolding"
-version = "0.0.1"
+version = "0.0.0"
 dependencies = [
     "pydantic-settings~=2.9",
     "pydantic~=2.11",
@@ -58,7 +58,10 @@ dev = [
 Homepage = "https://github.com/lordgordon/py-scaffolding"
 
 [tool.commitizen]
-version = "0.0.1"
+version = "0.0.0"
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+version_scheme = "semver2"
 version_files = [
     "src/py_scaffolding/__version__.py",
     "pyproject.toml:version",

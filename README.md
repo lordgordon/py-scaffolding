@@ -20,7 +20,7 @@ After creating a new GitHub repository from this template:
 2. Find and replace all `py-scaffolding` or `py_scaffolding` references with the new repository name.
 3. Review and update:
    - `pyproject.toml`. In particular items in the `[project]` section. Update your license.
-   - `src/<your_project>/__version__.py`. Align description and license with the project's TOML.
+   - `src/<your_project>/__init__.py`. Align description and license with the project's TOML.
    - `CODEOWNERS`.
    - `CONTRIBUTING.md`.
    - `LICENSE`.
