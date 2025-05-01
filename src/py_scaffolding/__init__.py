@@ -1,6 +1,6 @@
 """Main project package."""
 
-from .__version__ import __full_version__, __version__
+from .__version__ import __version__
 
 __title__ = "py-scaffolding"
 __description__ = "Python project scaffolding"
