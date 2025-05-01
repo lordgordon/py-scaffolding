@@ -31,24 +31,21 @@ make
 
 Version bump and changelog update:
 
-```shell
-# PATCH
-uv run cz bump --increment PATCH -ch --dry-run
-# MINOR
-uv run cz bump --increment MINOR -ch --dry-run
-# MAJOR
-uv run cz bump --increment MAJOR -ch --dry-run
-```
+- `make bump-patch`
+- `make bump-minor`
+- `make bump-major`
 
-If OK, run again without `--dry-run`. For full details see https://commitizen-tools.github.io/commitizen/bump/.
+For full details see https://commitizen-tools.github.io/commitizen/bump/.
 
 ## Commands
 
-The main command that run everything (lint, test, build):
+The main command that runs the most common checks (lint, test):
 
 ```shell
-make
+make dev
 ```
+
+When ready, just run `make` to validate everything.
 
 Then, to execute the main entry point with the local Python environment:
 
@@ -67,6 +64,8 @@ or, to open a shell in the testing Docker image:
 ```shell
 make run-shell-testing
 ```
+
+To keep the packages updated, run `make upgrade`.
 
 ### Makefile commands
 
