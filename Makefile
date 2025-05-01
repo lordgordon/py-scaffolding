@@ -9,9 +9,14 @@ RUN_DOCKER_BUILD := docker buildx build --build-arg --build-arg -f Dockerfile
 RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
 
 .PHONY: \
+	_install \
+	_upgrade \
 	all \
 	build \
 	build-for-tests \
+	bump-major \
+	bump-minor \
+	bump-patch \
 	check \
 	check-code \
 	check-fix \
@@ -19,6 +24,7 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	check-types \
 	check-uv \
 	clean \
+	dev \
 	doc \
 	help \
 	install \
@@ -29,21 +35,39 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	serve-coverage \
 	serve-doc \
 	test \
+	test-only \
+	update \
+	verify-packages \
 	vulnscan
 
-all: check-fix check test doc build vulnscan
+all: verify-packages check-fix check test doc build vulnscan ## ensure everything is OK: code checks, tests, documentation, image build, vulnerability scan
 
-install: ## Install the environment
+dev: check-fix check test ## daily routine to check code and run tests
+
+verify-packages: ## check Python outdated pakcages and run a pip audit vulnerability scan
+	@echo "\n${BLUE}Show outdated packages...${NC}\n"
+	${UV} pip list --outdated
+	@echo "\n${BLUE}auditing Python packages...${NC}\n"
+	${UV} run pip-audit --desc
+
+_install:
 	@echo "\n${BLUE}Running uv lock...${NC}\n"
 	${UV} run python --version
 	${UV} lock --no-upgrade
 	${UV} sync
 	@echo "\n${BLUE}Install the pre-commit script...${NC}\n"
 	${UV} run pre-commit install
+
+_upgrade:
+	${UV} sync --upgrade
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
 	${UV} pip list --outdated
 	@echo "\n${BLUE}auditing Python packages...${NC}\n"
 	${UV} run pip-audit --desc
+
+install: _install verify-packages  ## Install the environment
+
+upgrade: _upgrade verify-packages ## Upgrade Python libraries
 
 check-uv: ## Verify lockfile status
 	${UV} lock --check
@@ -76,6 +100,9 @@ test: ## Run all the tests with code coverage. You can also `make test tests/tes
 	${UV} run coverage html
 	${UV} run coverage xml
 
+test-only: ## Run a subset of the unit tests with `make test-only test_name=tests/some_file.py`
+	${UV} run python -m pytest -vv --capture=fd $(test_name)
+
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
@@ -89,19 +116,6 @@ serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/index.html \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
 	cd "docs/_build/html"; ${UV} run python -OO -m http.server
-
-clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
-	@echo "\n${BLUE}Cleaning up...${NC}\n"
-	-rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage .hypothesis dist .trivy-cache
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-	-cd docs; make clean
-	@echo "\n${BLUE}Removing uv environment...${NC}\n"
-	-rm -rf .venv
-	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
-	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
-	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
-	-docker image rm ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} --force
 
 run-locally: ## Execute the main entry point locally (with uv)
 	${UV} run python -I -OO main.py
@@ -129,6 +143,31 @@ vulnscan: ## Execute Trivy scanner dockerized against this repo
 	${RUN_TRIVY} config --config trivy.yaml .
 	${RUN_TRIVY} fs --config trivy.yaml .
 	${RUN_TRIVY} rootfs --config trivy.yaml /
+
+bump-patch: ## bump the project's version with a PATCH
+	${UV} run cz bump --files-only --local-version --increment PATCH
+	${UV} lock --no-upgrade
+
+bump-minor: ## bump the project's version with a MINOR
+	${UV} run cz bump --files-only --local-version --increment MINOR
+	${UV} lock --no-upgrade
+
+bump-major: ## bump the project's version with a MAJOR
+	${UV} run cz bump --files-only --local-version --increment MAJOR
+	${UV} lock --no-upgrade
+
+clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
+	@echo "\n${BLUE}Cleaning up...${NC}\n"
+	-rm -rf .mypy_cache .pytest_cache htmlcov junit coverage.xml .coverage .hypothesis dist .trivy-cache
+	find . -type f -name "*.py[co]" -delete
+	find . -type d -name "__pycache__" -delete
+	-cd docs; make clean
+	@echo "\n${BLUE}Removing uv environment...${NC}\n"
+	-rm -rf .venv
+	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
+	-docker image rm ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} --force
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
