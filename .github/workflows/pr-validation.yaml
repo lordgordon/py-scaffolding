@@ -133,8 +133,9 @@ jobs:
         run: >-
           docker run --rm
           ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
-          make check
+          make check-ci
       - name: Unit tests
+        # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
         if: "!cancelled()"
         run: >-
           docker run --rm
