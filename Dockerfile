@@ -14,7 +14,9 @@ FROM $DOCKER_BASE_IMAGE AS base
     PYTHONUNBUFFERED=1 \
     UV_LOCKED=1 \
     # ^^^ uv.lock must remain unchanged in the container
-    UV_PYTHON_PREFERENCE="system" \
+    UV_NO_SYNC=1 \
+    # ^^^ don't try to sync at every uv run
+  UV_PYTHON_PREFERENCE="system" \
     LOCAL_USER=alice
   ENV VIRTUAL_ENV="$PYSETUP_PATH/.venv"
   ENV PATH="$VIRTUAL_ENV/bin:$PATH"
@@ -66,7 +68,7 @@ FROM base AS testing
   RUN apt-get update && apt-get -y install --no-install-recommends make && rm -rf /var/lib/apt/lists/*
 
   USER $LOCAL_USER
-  RUN uv sync --inexact --no-editable
+  RUN uv sync
 
   COPY --chown=$LOCAL_USER:$LOCAL_USER docs/ docs/
   COPY --chown=$LOCAL_USER:$LOCAL_USER tests/ tests/
