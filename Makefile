@@ -18,6 +18,7 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	bump-minor \
 	bump-patch \
 	check \
+	check-ci \
 	check-code \
 	check-fix \
 	check-pre-commit \
@@ -87,6 +88,8 @@ check-types: ## Just check the types with mypy
 	${UV} run mypy src tests
 
 check: check-uv check-pre-commit check-types check-code ## Run all code checks without fixing the code
+
+check-ci: check-uv check-types check-code ## Run code checks for the CI/CD environment
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"

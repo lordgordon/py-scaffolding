@@ -131,17 +131,13 @@ jobs:
         run: git lfs checkout
       - name: Code checks
         run: >-
-          docker run --rm --volume "$(pwd):/app" --workdir=/app
+          docker run --rm
           ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
           make check
       - name: Unit tests
         if: "!cancelled()"
         run: >-
           docker run --rm
-          --workdir=/app
-          --volume "$(pwd):/app"
-          --volume "$(pwd)/junit:/app/junit"
-          --volume "$(pwd)/coverage:/app/coverage"
           ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
           make test
         env:
