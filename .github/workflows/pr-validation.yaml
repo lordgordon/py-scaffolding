@@ -130,6 +130,8 @@ jobs:
           docker run --rm
           ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
           make check-ci
+          env:
+            UV_NO_SYNC: 1
       - name: Unit tests
         # NOTE: this may be a docker compose for more complex scenarios involving database and mocks
         if: "!cancelled()"

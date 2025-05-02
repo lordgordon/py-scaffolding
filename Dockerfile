@@ -14,8 +14,6 @@ FROM $DOCKER_BASE_IMAGE AS base
     PYTHONUNBUFFERED=1 \
     UV_LOCKED=1 \
     # ^^^ uv.lock must remain unchanged in the container
-    UV_NO_SYNC=1 \
-    # ^^^ to avoid running sync at every uv run command
     UV_PYTHON_PREFERENCE="system" \
     LOCAL_USER=alice
   ENV VIRTUAL_ENV="$PYSETUP_PATH/.venv"
