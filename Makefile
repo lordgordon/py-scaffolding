@@ -86,7 +86,7 @@ check-pre-commit: ## Run pre-commit against all files
 check-types: ## Just check the types with mypy
 	${UV} run mypy src tests
 
-check: check-uv check-types check-code ## Run all code checks without fixing the code
+check: check-uv check-pre-commit check-types check-code ## Run all code checks without fixing the code
 
 test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"

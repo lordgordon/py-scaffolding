@@ -29,7 +29,6 @@ def set_up_logger(
             another_key=True,
         )
     """
-    # pylint: disable=protected-access
     _set_up_structlog()
     logger = cast("structlog.stdlib.BoundLogger", structlog.get_logger(logger_name))
     logger.setLevel(log_level)
