@@ -131,7 +131,7 @@ jobs:
         run: git lfs checkout
       - name: Code checks
         run: >-
-          docker run --rm --volume "$(pwd):/repo" --workdir=/repo
+          docker run --rm --volume "$(pwd):/app" --workdir=/app
           ${IMAGE_NAME}-testing:${IMAGE_LOCAL_TAG}
           make check
       - name: Unit tests
