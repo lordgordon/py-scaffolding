@@ -125,10 +125,6 @@ jobs:
           ls -lsa ${GITHUB_ARTIFACTS_PATH}
           docker load < ${GITHUB_ARTIFACTS_PATH}/test.tar.gz
           docker image ls
-      - name: Add GITHUB_WORKSPACE as safe directory for git
-        run: git config --global --add safe.directory "${{env.GITHUB_WORKSPACE}}"
-      - name: Checkout LFS objects
-        run: git lfs checkout
       - name: Code checks
         run: >-
           docker run --rm
