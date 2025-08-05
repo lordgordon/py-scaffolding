@@ -47,7 +47,7 @@ dev: check-fix check test ## daily routine to check code and run tests
 
 verify-packages: ## check Python outdated pakcages and run a pip audit vulnerability scan
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	${UV} pip list --outdated
+	${UV} tree --outdated --locked
 	@echo "\n${BLUE}auditing Python packages...${NC}\n"
 	${UV} run pip-audit --desc
 
