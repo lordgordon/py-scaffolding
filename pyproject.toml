@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 name = "py-scaffolding"
 version = "0.0.0"
 dependencies = [
-    "pydantic-settings~=2.9",
+    "pydantic-settings~=2.10",
     "pydantic~=2.11",
     "structlog~=22.3",
 ]
-requires-python = "~=3.13,<3.14"
+requires-python = ">=3.13"
 authors = [
   { name = "Nicholas Fiorentini", email = "lordgordon@users.noreply.github.com" },
 ]
