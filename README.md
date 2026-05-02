@@ -46,16 +46,6 @@ make install
 make
 ```
 
-## Release and Changelog
-
-Version bump and changelog update:
-
-- `make bump-patch`
-- `make bump-minor`
-- `make bump-major`
-
-For full details see [commitizen](https://commitizen-tools.github.io/commitizen/bump/).
-
 ## Commands
 
 The main command that runs the most common checks (lint, test):
@@ -66,27 +56,9 @@ make dev
 
 When ready, just run `make` to validate everything.
 
-Then, to execute the main entry point with the local Python environment:
-
-```shell
-make run-locally
-```
-
-or, to execute the main entry point from Docker using the production image:
-
-```shell
-make run
-```
-
-or, to open a shell in the testing Docker image:
-
-```shell
-make run-shell-testing
-```
-
 To keep the packages updated, run `make upgrade`.
 
-### Makefile commands
+For help:
 
 ```shell
 make help

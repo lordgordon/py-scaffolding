@@ -1,0 +1,85 @@
+# This is for local development only
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres-pyscaffolding
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-pyscaffolding-data:/var/lib/postgresql/data/pgdata
+    environment:
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_PASSWORD: "dev_pyscaffolding_local_psw"
+      POSTGRES_USER: "dev_pyscaffolding"
+      POSTGRES_DB: "pyscaffolding"
+    networks:
+      - pyscaffolding-network
+
+  pgadmin:
+    image: dpage/pgadmin4:9.9
+    container_name: pgadmin_pyscaffolding
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-pyscaffolding-data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pyscaffolding-network
+
+  redis:
+    image: redis:8-trixie
+    container_name: redis-pyscaffolding
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+    ports:
+      - "6379:6379"
+    networks:
+      - pyscaffolding-network
+
+#  api_app:
+#    # use Makefile to build this image locally
+#    image: py-scaffolding-testing:current-local
+#    container_name: api_app
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8000/healthz" ]
+#      interval: 15s
+#      retries: 5
+#      start_period: 10s
+#      timeout: 10s
+#    command: "uvicorn api_app.main:app --port 8000 --host 0.0.0.0 --workers 2 --limit-max-requests 500 --proxy-headers"
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      redis:
+#        condition: service_healthy
+#      postgres:
+#        condition: service_healthy
+#    networks:
+#      - pyscaffolding-network
+
+volumes:
+  postgres-pyscaffolding-data:
+  pgadmin-pyscaffolding-data:
+
+networks:
+  pyscaffolding-network:
+    driver: bridge

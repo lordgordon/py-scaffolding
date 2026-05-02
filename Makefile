@@ -1,22 +1,26 @@
-UV := uv
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 
 # keep this aligned with GitHub actions
-DOCKER_IMAGE_NAME=py-scaffolding
-DOCKER_LOCAL_TAG=current-local
-RUN_DOCKER_BUILD := docker buildx build --build-arg --build-arg -f Dockerfile
-RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --cache-dir ./.trivy-cache
+DOCKER_IMAGE_NAME ?= py-scaffolding
+DOCKER_LOCAL_TAG ?= current-local
+COMPOSE_YAML ?= docker-compose.yaml
+DOCKER_PLATFORM ?= linux/amd64
+
+UV_GIT_LFS := 1
+UV := uv
+UV_RUN := uv run --locked
+RUN_DOCKER_BUILD := docker buildx build --platform ${DOCKER_PLATFORM} --build-arg --build-arg
+
+ARCH := $(shell uname -m)
 
 .PHONY: \
 	_install \
 	_upgrade \
 	all \
 	build \
+	build-for-prod \
 	build-for-tests \
-	bump-major \
-	bump-minor \
-	bump-patch \
 	check \
 	check-ci \
 	check-code \
@@ -25,6 +29,10 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	check-types \
 	check-uv \
 	clean \
+	compose-force-reset \
+	compose-logs \
+	compose-start \
+	compose-stop \
 	dev \
 	doc \
 	help \
@@ -36,35 +44,31 @@ RUN_TRIVY := docker run  --rm -v $(shell pwd):/app ${DOCKER_IMAGE_NAME}-vulnscan
 	serve-coverage \
 	serve-doc \
 	test \
+	test-ci \
 	test-only \
 	update \
-	verify-packages \
-	vulnscan
+	verify-packages
 
-all: verify-packages check-fix check test doc build vulnscan ## ensure everything is OK: code checks, tests, documentation, image build, vulnerability scan
+all: verify-packages check-fix check test doc build ## ensure everything is OK: code checks, tests, documentation, image build, vulnerability scan
 
 dev: check-fix check test ## daily routine to check code and run tests
 
-verify-packages: ## check Python outdated pakcages and run a pip audit vulnerability scan
+verify-packages: ## check Python outdated packages and run a pip audit vulnerability scan
 	@echo "\n${BLUE}Show outdated packages...${NC}\n"
 	${UV} tree --outdated --locked
 	@echo "\n${BLUE}auditing Python packages...${NC}\n"
-	${UV} run pip-audit --desc
+	${UV_RUN} pip-audit --desc
 
 _install:
 	@echo "\n${BLUE}Running uv lock...${NC}\n"
-	${UV} run python --version
 	${UV} lock --no-upgrade
-	${UV} sync
+	${UV} sync --locked
 	@echo "\n${BLUE}Install the pre-commit script...${NC}\n"
-	${UV} run pre-commit install
+	${UV_RUN} pre-commit install
+	${UV_RUN} python --version
 
 _upgrade:
 	${UV} sync --upgrade
-	@echo "\n${BLUE}Show outdated packages...${NC}\n"
-	${UV} pip list --outdated
-	@echo "\n${BLUE}auditing Python packages...${NC}\n"
-	${UV} run pip-audit --desc
 
 install: _install verify-packages  ## Install the environment
 
@@ -74,42 +78,47 @@ check-uv: ## Verify lockfile status
 	${UV} lock --check
 
 check-fix: ## Auto fix the code issues and format code
-	${UV} run ruff check --select I --fix
-	${UV} run ruff format
+	${UV_RUN} ruff check --select I --fix
+	${UV_RUN} ruff format
 
 check-code: ## Find code issues
-	${UV} run ruff check
-	${UV} run ruff format --preview
+	${UV_RUN} ruff check
+	${UV_RUN} ruff format --preview
 
 check-pre-commit: ## Run pre-commit against all files
-	${UV} run pre-commit run --all-files
+	${UV_RUN} pre-commit run --all-files
 
 check-types: ## Just check the types with mypy
-	${UV} run mypy src tests
+	${UV_RUN} mypy src tests
 
 check: check-uv check-pre-commit check-types check-code ## Run all code checks without fixing the code
 
 check-ci: check-uv check-types check-code ## Run code checks for the CI/CD environment
 
-test: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
+test-local: ## Run all the tests with code coverage. You can also `make test tests/test_my_specific.py`
 	@echo "\n${BLUE}Running pytest with coverage...${NC}\n"
-	${UV} run coverage erase;
-	${UV} run python -Im coverage \
+	${UV_RUN} coverage erase;
+	${UV_RUN} python -Im coverage \
 		run -m pytest \
 		--junitxml=junit/test-results.xml \
 		--hypothesis-show-statistics \
 		--doctest-modules
-	${UV} run coverage report
-	${UV} run coverage html
-	${UV} run coverage xml
+	${UV_RUN} coverage report
+	${UV_RUN} coverage html
+	${UV_RUN} coverage xml
+
+test: test-local ## Full test with compose requirements
 
 test-only: ## Run a subset of the unit tests with `make test-only test_name=tests/some_file.py`
-	${UV} run python -m pytest -vv --capture=fd $(test_name)
+	${UV_RUN} python -m pytest -vv --capture=fd $(test_name)
+
+test-ci: ## Run tests for CICD
+	docker run --rm --network volta-connect-edge-middleware_middleware-network ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} make test-local
 
 serve-coverage: ## Start a local server to show the HTML code coverage report
 	@echo "\n${BLUE}Open http://localhost:8000/ \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	cd "htmlcov"; ${UV} run python -OO -m http.server
+	cd "htmlcov"; ${UV_RUN} python -OO -m http.server
 
 doc: ## Compile and update the internal documentation
 	@echo "\n${BLUE}Running Sphinx documentation...${NC}\n"
@@ -118,46 +127,38 @@ doc: ## Compile and update the internal documentation
 serve-doc: doc ## Start a local server to show the internal documentation
 	@echo "\n${BLUE}Open http://localhost:8000/index.html \n\nKill with CTRL+C${NC}\n"
 	@echo "Starting server..."
-	cd "docs/_build/html"; ${UV} run python -OO -m http.server
+	cd "docs/_build/html"; ${UV_RUN} python -OO -m http.server
 
 run-locally: ## Execute the main entry point locally (with uv)
-	${UV} run python -I -OO main.py
+	${UV_RUN} python -I -OO main.py
 
 build-for-tests: ## Build Docker image with testing tools
-	${RUN_DOCKER_BUILD} --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} .
+	${RUN_DOCKER_BUILD} -f Dockerfile --target testing -t ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} .
 
-build: build-for-tests ## Build Docker image for production
-	${RUN_DOCKER_BUILD} --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
-	${RUN_DOCKER_BUILD} --target migrations -t ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} .
+build-for-prod: ## Build Docker image for production
+	${RUN_DOCKER_BUILD} -f Dockerfile --target production -t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} .
 
-run: build ## Execute the main entry point in the Docker image
-	docker run --rm -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
+build: build-for-tests build-for-prod ## Build all docker images
 
 run-shell-testing: build-for-tests ## Open a shell in the testing Docker image
-	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG}
+	docker run --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG}
+  # --network <network name>
 
 run-shell-prod: build ## Open a shell in the production Docker image
-	docker run  --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
+	docker run --rm --entrypoint /bin/bash -it ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG}
+  # --network <network name>
 
-vulnscan: ## Execute Trivy scanner dockerized against this repo
-## IMPORTANT: GitHub actions runs Trivy natively, you need to update the workflow when changing options here
-	${RUN_DOCKER_BUILD} --target vulnscan -t ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} .
-	${RUN_TRIVY} version
-	${RUN_TRIVY} config --config trivy.yaml .
-	${RUN_TRIVY} fs --config trivy.yaml .
-	${RUN_TRIVY} rootfs --config trivy.yaml /
+compose-start: build-for-tests ## Run the docker compose with local config with the existing images
+	docker-compose -f ${COMPOSE_YAML} up --detach
 
-bump-patch: ## bump the project's version with a PATCH
-	${UV} run cz bump --files-only --local-version --increment PATCH
-	${UV} lock --no-upgrade
+compose-logs: ## Follow the logs from all running containers
+	docker-compose -f ${COMPOSE_YAML} logs --follow --timestamps
 
-bump-minor: ## bump the project's version with a MINOR
-	${UV} run cz bump --files-only --local-version --increment MINOR
-	${UV} lock --no-upgrade
+compose-stop: ## Stop the docker compose without removing the containers
+	docker-compose -f ${COMPOSE_YAML} stop
 
-bump-major: ## bump the project's version with a MAJOR
-	${UV} run cz bump --files-only --local-version --increment MAJOR
-	${UV} lock --no-upgrade
+compose-force-reset: ## Remove all persistent data, including databases, allowing to restart from scratch
+	docker-compose -f ${COMPOSE_YAML} down
 
 clean: ## Force a clean environment: remove all temporary files and caches. Start from a new environment
 	@echo "\n${BLUE}Cleaning up...${NC}\n"
@@ -166,11 +167,10 @@ clean: ## Force a clean environment: remove all temporary files and caches. Star
 	find . -type d -name "__pycache__" -delete
 	-cd docs; make clean
 	@echo "\n${BLUE}Removing uv environment...${NC}\n"
+	${UV} cache clean
 	-rm -rf .venv
 	-docker image rm ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} --force
 	-docker image rm ${DOCKER_IMAGE_NAME}-testing:${DOCKER_LOCAL_TAG} --force
-	-docker image rm ${DOCKER_IMAGE_NAME}-vulnscan:${DOCKER_LOCAL_TAG} --force
-	-docker image rm ${DOCKER_IMAGE_NAME}-migrations:${DOCKER_LOCAL_TAG} --force
 
 help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) \
